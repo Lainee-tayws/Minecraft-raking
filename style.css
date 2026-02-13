@@ -1,0 +1,73 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #0f0f0f;
+  color: white;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+button {
+  background: #1f1f1f;
+  color: white;
+  border: 1px solid #333;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #333;
+}
+
+.servers {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 20px 0;
+}
+
+.servers img {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+}
+
+table {
+  width: 95%;
+  margin: auto;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #222;
+}
+
+tr:hover {
+  background: #1a1a1a;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.player img {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+  th, td {
+    padding: 8px;
+    font-size: 12px;
+  }
+}

@@ -3,57 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minecraft Global Tiers</title>
+<title>Minecraft Dynamic Tiers</title>
 <style>
-/* ===================== БАЗОВЫЕ СТИЛИ ===================== */
-body {
-  margin:0;
-  font-family: Arial,sans-serif;
-  color:white;
-  overflow-x:hidden;
-  background:linear-gradient(120deg,#0f2027,#203a43,#2c5364);
-}
-canvas {
-  position:fixed; top:0; left:0; pointer-events:none; z-index:0;
-}
-.container {
-  position:relative; z-index:1; padding:20px;
-}
-h1 {text-align:center;}
-table {
-  width:100%; border-collapse:collapse;
-  backdrop-filter:blur(15px); background:rgba(255,255,255,0.05);
-  border-radius:15px; overflow:hidden;
-}
+body {margin:0;font-family:Arial,sans-serif;color:white;overflow-x:hidden;background:linear-gradient(120deg,#0f2027,#203a43,#2c5364);}
+canvas {position:fixed;top:0;left:0;pointer-events:none;z-index:0;}
+.container {position:relative;z-index:1;padding:20px;}
+h1{text-align:center;}
+table {width:100%;border-collapse:collapse;backdrop-filter:blur(15px);background:rgba(255,255,255,0.05);border-radius:15px;overflow:hidden;}
 th,td {padding:12px;text-align:center;}
 th {background:rgba(255,255,255,0.1);}
-tr {
-  border-bottom:1px solid rgba(255,255,255,0.1);
-  animation:fadeIn 0.4s ease; transition:0.2s; cursor:pointer;
-}
-tr:hover {background:rgba(255,255,255,0.08); transform:scale(1.01);}
+tr {border-bottom:1px solid rgba(255,255,255,0.1);animation:fadeIn 0.4s ease;transition:0.2s;cursor:pointer;}
+tr:hover {background:rgba(255,255,255,0.08);transform:scale(1.01);}
 @keyframes fadeIn {from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
-/* ===================== ТОП 1-3 ===================== */
 .top-1 {background:linear-gradient(90deg,#3a2f00,#ffd70055);box-shadow:0 0 25px #ffd70088;}
-.top-1 td:first-child {color:#ffd700;font-size:18px;font-weight:bold;}
+.top-1 td:first-child{color:#ffd700;font-size:18px;font-weight:bold;}
 .top-2 {background:linear-gradient(90deg,#2a2a2a,#c0c0c055);box-shadow:0 0 20px #c0c0c088;}
-.top-2 td:first-child {color:#c0c0c0;font-size:17px;font-weight:bold;}
+.top-2 td:first-child{color:#c0c0c0;font-size:17px;font-weight:bold;}
 .top-3 {background:linear-gradient(90deg,#2a1a00,#cd7f3255);box-shadow:0 0 15px #cd7f3288;}
-.top-3 td:first-child {color:#cd7f32;font-size:16px;font-weight:bold;}
-/* ===================== КНОПКИ И ИНПУТ ===================== */
-button {padding:10px 20px; margin:5px; background:#111; color:white; border:1px solid #333; cursor:pointer;}
-input,textarea,select {padding:8px;margin:5px;background:#111;border:1px solid #333;color:white;width:100%;box-sizing:border-box;}
-#bioPopup {position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.85);padding:20px;border-radius:15px;display:none;z-index:999; max-width:300px;}
+.top-3 td:first-child{color:#cd7f32;font-size:16px;font-weight:bold;}
+button{padding:10px 20px;margin:5px;background:#111;color:white;border:1px solid #333;cursor:pointer;}
+input,textarea,select{padding:8px;margin:5px;background:#111;border:1px solid #333;color:white;width:100%;box-sizing:border-box;}
+#bioPopup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.85);padding:20px;border-radius:15px;display:none;z-index:999;max-width:300px;}
 #bioPopup button{margin-top:10px;}
-#searchBar {width:100%; padding:8px; margin:10px 0; background:#111; border:1px solid #333; color:white;}
-#filterServer {width:100%; padding:8px; margin-bottom:10px; background:#111; border:1px solid #333; color:white;}
+#searchBar{width:100%;padding:8px;margin:10px 0;background:#111;border:1px solid #333;color:white;}
+#filterServer{width:100%;padding:8px;margin-bottom:10px;background:#111;border:1px solid #333;color:white;}
+.deleteBtn{background:red;color:white;padding:4px 8px;border:none;border-radius:4px;cursor:pointer;}
+.editBtn{background:orange;color:white;padding:4px 8px;border:none;border-radius:4px;cursor:pointer;}
 @media(max-width:600px){th,td{padding:6px;font-size:12px;}}
 </style>
 </head>
 <body>
 <canvas id="snow"></canvas>
 <div class="container">
-<h1>GLOBAL PVP TIERS</h1>
+<h1>GLOBAL PVP DYNAMIC TIERS</h1>
 
 <input type="text" id="searchBar" placeholder="Поиск по нику...">
 <select id="filterServer">
@@ -76,7 +58,7 @@ input,textarea,select {padding:8px;margin:5px;background:#111;border:1px solid #
 <button onclick="openAdmin()">Админка</button>
 <table>
 <thead>
-<tr><th>#</th><th>Игрок</th><th>Ugame</th><th>Breadix</th><th>Minenex</th></tr>
+<tr><th>#</th><th>Игрок</th><th>Ugame</th><th>Breadix</th><th>Minenex</th><th>Действия</th></tr>
 </thead>
 <tbody id="tableBody"></tbody>
 </table>
@@ -88,13 +70,13 @@ input,textarea,select {padding:8px;margin:5px;background:#111;border:1px solid #
 </div>
 
 <script>
-// ===================== ДАННЫЕ =====================
+// ===== ДАННЫЕ =====
 let players=JSON.parse(localStorage.getItem("players"))||[];
 let editIndex=null;
 let filterServer='all';
 let searchQuery='';
 
-// ===================== РЕНДЕР =====================
+// ===== РЕНДЕР ТАБЛИЦЫ =====
 function render(){
   const table=document.getElementById("tableBody");
   table.innerHTML='';
@@ -110,19 +92,39 @@ function render(){
     else if(i===2) cls='top-3';
     let row=document.createElement("tr");
     row.className=cls;
-    row.innerHTML=`<td>${i+1}</td><td>${p.name}</td><td>${p.ugame}</td><td>${p.breadix}</td><td>${p.minenex}</td>`;
+    row.innerHTML=`<td>${i+1}</td><td>${p.name}</td><td>${p.ugame}</td><td>${p.breadix}</td><td>${p.minenex}</td>
+    <td>
+      <button class="editBtn" onclick="editPlayer(${i})">Редактировать</button>
+      <button class="deleteBtn" onclick="deletePlayer(${i})">🗑</button>
+    </td>`;
     row.onclick=()=>showBio(i);
     table.appendChild(row);
   });
 }
 
-// ===================== АДМИНКА =====================
+// ===== АДМИНКА =====
 function openAdmin(){
   const pass=prompt("Пароль:");
   if(pass==="doirsy123") document.getElementById("adminPanel").style.display="block";
 }
 function clearAdmin(){
   name.value=''; ugame.value=''; breadix.value=''; minenex.value=''; bio.value=''; position.value='';
+}
+function editPlayer(i){
+  editIndex=i;
+  name.value=players[i].name;
+  ugame.value=players[i].ugame;
+  breadix.value=players[i].breadix;
+  minenex.value=players[i].minenex;
+  bio.value=players[i].bio;
+  position.value=i+1;
+}
+function deletePlayer(i){
+  if(confirm(`Удалить игрока ${players[i].name}?`)){
+    players.splice(i,1);
+    localStorage.setItem("players",JSON.stringify(players));
+    render();
+  }
 }
 function addOrEditPlayer(){
   const n=name.value.trim();
@@ -133,24 +135,24 @@ function addOrEditPlayer(){
   let pos=parseInt(position.value)-1;
   if(!n){alert("Ник обязателен");return;}
   const playerData={name:n,ugame:u,breadix:b,minenex:m,bio:bioText};
+  if(pos<0 || pos>players.length) pos=players.length;
+
   if(editIndex!==null){
-    if(pos>=0 && pos<players.length){players.splice(editIndex,1); players.splice(pos,0,playerData);}
-    else{players[editIndex]=playerData;}
+    // удаляем старого игрока
+    players.splice(editIndex,1);
+    // вставляем на позицию
+    players.splice(pos,0,playerData);
     editIndex=null;
-  }else{
-    if(pos>=0 && pos<=players.length){players.splice(pos,0,playerData);}
-    else players.push(playerData);
+  } else {
+    // вставляем нового игрока на позицию сдвигая вниз всех
+    players.splice(pos,0,playerData);
   }
   localStorage.setItem("players",JSON.stringify(players));
   clearAdmin();
   render();
 }
 
-// ===================== ПОИСК И ФИЛЬТР =====================
-document.getElementById("searchBar").addEventListener("input",e=>{searchQuery=e.target.value;render();});
-document.getElementById("filterServer").addEventListener("change",e=>{filterServer=e.target.value;render();});
-
-// ===================== БИОГРАФИЯ =====================
+// ===== БИОГРАФИЯ =====
 function showBio(i){
   const popup=document.getElementById("bioPopup");
   document.getElementById("bioText").innerText=players[i].bio||"Биография не добавлена";
@@ -158,7 +160,11 @@ function showBio(i){
 }
 function closeBio(){document.getElementById("bioPopup").style.display="none";}
 
-// ===================== СНЕГ =====================
+// ===== ПОИСК И ФИЛЬТР =====
+document.getElementById("searchBar").addEventListener("input",e=>{searchQuery=e.target.value;render();});
+document.getElementById("filterServer").addEventListener("change",e=>{filterServer=e.target.value;render();});
+
+// ===== СНЕГ =====
 const canvas=document.getElementById("snow");
 const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth; canvas.height=window.innerHeight;
@@ -175,7 +181,7 @@ function draw(){
 setInterval(draw,30);
 window.addEventListener("resize",()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
 
-// ===================== ИНИЦИАЛИЗАЦИЯ =====================
+// ===== ИНИЦИАЛИЗАЦИЯ =====
 render();
 </script>
 </body>

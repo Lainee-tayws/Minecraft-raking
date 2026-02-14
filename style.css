@@ -1,73 +1,99 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #0f0f0f;
   color: white;
+  overflow-x: hidden;
+  background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* СНЕГ */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* КОНТЕЙНЕР */
+.container {
+  position: relative;
+  z-index: 1;
   padding: 20px;
 }
 
-button {
-  background: #1f1f1f;
-  color: white;
-  border: 1px solid #333;
-  padding: 10px 15px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #333;
-}
-
-.servers {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin: 20px 0;
-}
-
-.servers img {
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
-}
-
+/* СТЕКЛЯННАЯ ТАБЛИЦА */
 table {
-  width: 95%;
-  margin: auto;
+  width: 100%;
   border-collapse: collapse;
+  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  overflow: hidden;
 }
 
 th, td {
-  padding: 15px;
+  padding: 12px;
   text-align: center;
-  border-bottom: 1px solid #222;
+}
+
+th {
+  background: rgba(255,255,255,0.1);
+}
+
+tr {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  animation: fadeIn 0.4s ease;
+  transition: 0.2s;
 }
 
 tr:hover {
-  background: #1a1a1a;
+  background: rgba(255,255,255,0.08);
+  transform: scale(1.01);
 }
 
-.player {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(5px);}
+  to {opacity: 1; transform: translateY(0);}
 }
 
-.player img {
-  width: 40px;
-  height: 40px;
-  border-radius: 6px;
+/* ТОП 1 */
+.top-1 {
+  background: linear-gradient(90deg, #3a2f00, #ffd70055);
+  box-shadow: 0 0 25px #ffd70088;
+}
+.top-1 td:first-child {
+  color: #ffd700;
+  font-size: 18px;
+  font-weight: bold;
 }
 
-@media (max-width: 768px) {
+/* ТОП 2 */
+.top-2 {
+  background: linear-gradient(90deg, #2a2a2a, #c0c0c055);
+  box-shadow: 0 0 20px #c0c0c088;
+}
+.top-2 td:first-child {
+  color: #c0c0c0;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+/* ТОП 3 */
+.top-3 {
+  background: linear-gradient(90deg, #2a1a00, #cd7f3255);
+  box-shadow: 0 0 15px #cd7f3288;
+}
+.top-3 td:first-child {
+  color: #cd7f32;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* АДАПТАЦИЯ */
+@media (max-width: 600px) {
   th, td {
-    padding: 8px;
+    padding: 6px;
     font-size: 12px;
   }
 }

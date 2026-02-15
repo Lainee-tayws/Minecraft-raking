@@ -3,69 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FishTiers | Ultimate Edition</title>
+    <title>FishTiers | Pro Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');
+        
         :root {
             --glass: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.08);
-            --accent: #0077FF;
+            --accent: #FF0000; /* Дефолтная красная тема */
             --text: #ffffff;
             --text-dim: #888;
-            --blur: 15px;
+            --blur: 100px; /* Дефолтный блур 100 */
         }
+
         body {
-            font-family: 'Montserrat', sans-serif; background: #08090b;
+            font-family: 'Montserrat', sans-serif; background: #050505;
             color: var(--text); margin: 0; min-height: 100vh; overflow-x: hidden;
+            transition: 0.3s;
         }
+
         .bg-glow {
             position: fixed; width: 100vw; height: 100vh; z-index: -1;
-            background: radial-gradient(circle at 15% 15%, rgba(0, 119, 255, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 85% 85%, rgba(0, 119, 255, 0.1) 0%, transparent 40%);
-            transition: 0.8s;
+            background: radial-gradient(circle at 20% 20%, var(--accent) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 80%, var(--accent) 0%, transparent 40%);
+            opacity: 0.15; filter: blur(50px);
         }
-        .header { background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(20px); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100; }
-        .logo { font-weight: 900; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
-        .logo span { color: var(--accent); }
-        .header-tools { display: flex; align-items: center; gap: 15px; }
-        .search-box { background: var(--glass); border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 30px; color: white; outline: none; width: 140px; transition: 0.3s; }
-        .search-box:focus { width: 200px; border-color: var(--accent); }
-        .tool-btn { background: var(--glass); border: 1px solid var(--glass-border); color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .tool-btn:hover { background: var(--accent); transform: rotate(45deg); }
 
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; padding-bottom: 150px; }
-        .main-nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }
-        .nav-btn { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 800; color: var(--text-dim); text-transform: uppercase; transition: 0.3s; font-size: 11px; }
-        .nav-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 20px rgba(0,119,255,0.2); }
-        
-        .global-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .player-card { background: var(--glass); backdrop-filter: blur(var(--blur)); border-radius: 18px; padding: 15px; display: flex; align-items: center; border: 1px solid var(--glass-border); transition: 0.3s; cursor: pointer; }
-        .player-card:hover { border-color: var(--accent); transform: translateY(-3px); }
-        .rank-num { font-weight: 900; font-size: 22px; width: 40px; opacity: 0.4; }
-        .skin-box { width: 50px; height: 50px; background: #000; border-radius: 10px; margin-right: 15px; overflow: hidden; border: 1px solid var(--glass-border); }
+        .header { background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(20px); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100; }
+        .logo { font-weight: 900; font-size: 26px; text-transform: uppercase; letter-spacing: 3px; }
+        .logo span { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
+
+        .header-tools { display: flex; align-items: center; gap: 15px; }
+        .search-box { background: var(--glass); border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 30px; color: white; outline: none; width: 150px; transition: 0.3s; }
+        .search-box:focus { width: 250px; border-color: var(--accent); }
+
+        .container { max-width: 1300px; margin: 20px auto; padding: 0 20px; padding-bottom: 150px; }
+
+        /* Навигация */
+        .sub-nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .nav-btn { background: var(--glass); border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 800; color: var(--text-dim); text-transform: uppercase; transition: 0.3s; font-size: 11px; }
+        .nav-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 25px rgba(255,0,0,0.3); }
+
+        .section-title { text-align: center; margin: 30px 0 15px; font-size: 12px; letter-spacing: 4px; color: var(--text-dim); text-transform: uppercase; }
+
+        /* Карточки и ряды */
+        .tier-row { background: var(--glass); backdrop-filter: blur(var(--blur)); border-radius: 20px; margin-bottom: 12px; border: 1px solid var(--glass-border); display: flex; overflow: hidden; }
+        .tier-label { width: 70px; display: flex; align-items: center; justify-content: center; font-weight: 900; background: rgba(0,0,0,0.3); color: var(--accent); font-size: 20px; }
+        .players-wrap { padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; }
+        .p-tag { background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 10px; font-size: 14px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
+        .p-tag:hover { border-color: var(--accent); transform: translateY(-2px); background: rgba(255,0,0,0.1); }
+
+        .global-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
+        .player-card { background: var(--glass); backdrop-filter: blur(var(--blur)); border-radius: 22px; padding: 18px; display: flex; align-items: center; border: 1px solid var(--glass-border); transition: 0.3s; cursor: pointer; }
+        .player-card:hover { border-color: var(--accent); transform: scale(1.02); }
+        .rank-num { font-weight: 900; font-size: 26px; width: 45px; opacity: 0.3; font-style: italic; }
+
+        .skin-box { width: 55px; height: 55px; background: #000; border-radius: 12px; margin-right: 15px; border: 1px solid var(--glass-border); }
         .skin-box img { width: 100%; image-rendering: pixelated; }
 
-        .tier-row { background: var(--glass); backdrop-filter: blur(var(--blur)); border-radius: 15px; margin-bottom: 10px; border: 1px solid var(--glass-border); display: flex; overflow: hidden; }
-        .tier-label { width: 60px; display: flex; align-items: center; justify-content: center; font-weight: 900; background: rgba(0,0,0,0.2); color: var(--accent); }
-        .players-wrap { padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
-        .p-tag { background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
-        .p-tag:hover { border-color: var(--accent); background: rgba(0,119,255,0.1); }
+        /* Модалки */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: #0a0a0a; border: 1px solid var(--glass-border); width: 90%; max-width: 450px; border-radius: 25px; padding: 30px; box-shadow: 0 0 50px rgba(0,0,0,1); }
 
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #13141a; border: 1px solid var(--glass-border); width: 90%; max-width: 400px; border-radius: 20px; padding: 25px; }
-        .setting-item { margin-bottom: 15px; }
-        .setting-item label { display: block; font-size: 10px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 5px; font-weight: 700; }
+        /* Админка */
+        .admin-panel { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 1000px; background: rgba(10,10,12,0.98); backdrop-filter: blur(30px); border: 2px solid var(--accent); padding: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; z-index: 999; border-radius: 20px; }
+        .admin-input { background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 8px; font-size: 13px; outline: none; }
+        .admin-btn { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 900; text-transform: uppercase; }
 
-        .admin-panel { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 800px; background: rgba(10,10,12,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent); padding: 12px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; z-index: 999; border-radius: 12px; }
-        .admin-input { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 6px; font-size: 12px; }
-        .admin-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        
         .hidden { display: none !important; }
         body.compact .player-card { padding: 10px; }
-        body.compact .skin-box { width: 35px; height: 35px; }
+        body.compact .skin-box { width: 40px; height: 40px; }
     </style>
 </head>
 <body id="b-root">
@@ -75,67 +85,74 @@
         <div class="logo">FISH<span>TIERS</span></div>
         <div class="header-tools">
             <input type="text" class="search-box" id="search" placeholder="Поиск..." oninput="renderAll()">
-            <button class="tool-btn" onclick="toggleModal('user-modal')">🎨</button>
+            <button class="nav-btn" style="border-radius:50%; width:40px; height:40px; padding:0;" onclick="toggleModal('user-modal')">🎨</button>
         </div>
     </header>
 
     <div class="container">
-        <div class="main-nav">
-            <div id="nav-global" class="nav-btn active" onclick="switchMainMode('global')">Глобальный Топ</div>
-            <div id="nav-filter" class="nav-btn" onclick="switchMainMode('filter')">Серверы</div>
+        <div class="sub-nav">
+            <button id="m-global" class="nav-btn active" onclick="setMainMode('global')">🏆 Глобальный ТОП</button>
+            <button id="m-tiers" class="nav-btn" onclick="setMainMode('tiers')">⚔️ Обычные Тиры</button>
+            <button id="m-bows" class="nav-btn" onclick="setMainMode('bows')">🏹 Тиры Луков</button>
         </div>
 
-        <div id="filter-controls" class="hidden" style="display:flex; justify-content:center; gap:8px; margin-bottom:20px;">
-            <button class="nav-btn active" style="padding:8px 15px" onclick="setServer('ugame', this)">UGAME</button>
-            <button class="nav-btn" style="padding:8px 15px" onclick="setServer('breadix', this)">BREADIX</button>
-            <button class="nav-btn" style="padding:8px 15px" onclick="setServer('minenex', this)">MINENEX</button>
+        <div class="section-title">Устройство</div>
+        <div class="sub-nav">
+            <button id="d-pc" class="nav-btn active" onclick="setDevice('pc')">💻 PC</button>
+            <button id="d-gp" class="nav-btn" onclick="setDevice('gp')">🎮 GP</button>
+            <button id="d-pe" class="nav-btn" onclick="setDevice('pe')">📱 PE</button>
         </div>
 
-        <div id="tiers-display" class="hidden"></div>
-        <div id="global-display" class="global-grid"></div>
+        <div id="srv-select" class="hidden">
+            <div class="section-title">Сервер</div>
+            <div class="sub-nav">
+                <button class="nav-btn active" onclick="setServer('ugame', this)">UGAME</button>
+                <button class="nav-btn" onclick="setServer('breadix', this)">BREADIX</button>
+                <button class="nav-btn" onclick="setServer('minenex', this)">MINENEX</button>
+            </div>
+        </div>
+
+        <div id="display-area" style="margin-top: 40px;"></div>
     </div>
 
     <div id="user-modal" class="modal-overlay hidden" onclick="toggleModal('user-modal')">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 style="margin:0 0 20px 0">🎨 ВИЗУАЛ</h3>
-            <div class="setting-item">
-                <label>Цвет темы</label>
-                <input type="color" id="set-accent" onchange="savePrefs()" style="width:100%; height:40px; border:none; background:none; cursor:pointer;">
+            <h2 style="margin:0 0 20px 0; font-weight:900;">НАСТРОЙКИ</h2>
+            <div style="display:grid; gap:20px;">
+                <div><label style="font-size:10px; color:var(--text-dim);">ЦВЕТ АКЦЕНТА</label>
+                <input type="color" id="u-color" onchange="updateUI()" style="width:100%; height:45px; border:none; background:none; cursor:pointer;"></div>
+                <div><label style="font-size:10px; color:var(--text-dim);">РАЗМЫТИЕ (BLUR)</label>
+                <input type="range" id="u-blur" min="0" max="100" oninput="updateUI()" style="width:100%;"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                <label style="font-size:10px; color:var(--text-dim);">КОМПАКТНЫЙ ВИД</label>
+                <input type="checkbox" id="u-compact" onchange="updateUI()"></div>
             </div>
-            <div class="setting-item">
-                <label>Размытие (Blur)</label>
-                <input type="range" id="set-blur" min="0" max="30" oninput="savePrefs()" style="width:100%;">
-            </div>
-            <div class="setting-item" style="display:flex; justify-content:space-between; align-items:center;">
-                <label>Компактный вид</label>
-                <input type="checkbox" id="set-compact" onchange="savePrefs()" style="width:18px; height:18px;">
-            </div>
-            <button class="admin-btn" style="width:100%; margin-top:10px" onclick="toggleModal('user-modal')">ЗАКРЫТЬ</button>
+            <button class="admin-btn" style="width:100%; margin-top:25px;" onclick="toggleModal('user-modal')">ГОТОВО</button>
         </div>
     </div>
 
     <div id="bio-modal" class="modal-overlay hidden" onclick="toggleModal('bio-modal')">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div style="display:flex; align-items:center; gap:15px">
-                <img id="m-img" src="" style="width:60px; height:60px; border-radius:10px">
-                <h2 id="m-name" style="margin:0"></h2>
+            <div style="display:flex; align-items:center; gap:20px;">
+                <img id="b-img" src="" style="width:80px; height:80px; border-radius:15px; border:2px solid var(--accent);">
+                <h2 id="b-name" style="margin:0; font-size:30px;"></h2>
             </div>
-            <p id="m-bio" style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; margin-top:20px; font-size:14px; color:#ccc;"></p>
-            <button class="admin-btn" style="width:100%" onclick="toggleModal('bio-modal')">ЗАКРЫТЬ</button>
+            <div id="b-info" style="margin-top:20px; line-height:1.6; color:#aaa; font-size:14px; background:rgba(255,255,255,0.02); padding:20px; border-radius:15px;"></div>
+            <button class="admin-btn" style="width:100%; margin-top:20px;" onclick="toggleModal('bio-modal')">ЗАКРЫТЬ</button>
         </div>
     </div>
 
     <div id="admin-panel" class="admin-panel hidden">
-        <input type="text" id="a-name" class="admin-input" placeholder="Ник">
-        <input type="text" id="a-tier" class="admin-input" style="width:50px" placeholder="HT1">
-        <input type="number" id="a-rank" class="admin-input" style="width:50px" placeholder="№">
-        <select id="a-srv" class="admin-input">
-            <option value="ugame">UGAME</option><option value="breadix">BREADIX</option><option value="minenex">MINENEX</option>
-        </select>
-        <button class="admin-btn" onclick="saveToDB()">OK</button>
-        <button class="admin-btn" style="background:#ff4747" onclick="deleteFromDB()">DEL</button>
+        <input type="text" id="adm-name" class="admin-input" placeholder="Ник">
+        <input type="text" id="adm-tier" class="admin-input" style="width:60px" placeholder="HT1/BT1">
+        <input type="number" id="adm-rank" class="admin-input" style="width:50px" placeholder="Топ#">
+        <select id="adm-dev" class="admin-input"><option value="pc">PC</option><option value="gp">GP</option><option value="pe">PE</option></select>
+        <select id="adm-type" class="admin-input"><option value="sword">Меч (Sword)</option><option value="bow">Лук (Bow)</option></select>
+        <select id="adm-srv" class="admin-input"><option value="ugame">UGAME</option><option value="breadix">BREADIX</option><option value="minenex">MINENEX</option></select>
+        <button class="admin-btn" onclick="saveData()">СОХРАНИТЬ</button>
+        <button class="admin-btn" style="background:#444" onclick="deleteData()">УДАЛИТЬ</button>
     </div>
-    <div style="position:fixed; bottom:5px; right:10px; font-size:9px; opacity:0.1; cursor:pointer; color:#fff;" onclick="auth()">Admin</div>
+    <div style="position:fixed; bottom:5px; right:10px; font-size:9px; opacity:0.1; cursor:pointer;" onclick="auth()">Admin Access</div>
 
     <script>
         const firebaseConfig = {
@@ -149,36 +166,33 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        
+
         let players = [];
-        let mainMode = 'global';
-        let currentServer = 'ugame';
-        const SECRET_HASH = "ZG9pcnN5MTIz"; 
+        let mode = 'global'; // global, tiers, bows
+        let device = 'pc'; // pc, gp, pe
+        let server = 'ugame';
+        const SECRET = "ZG9pcnN5MTIz"; 
 
-        // Загрузка настроек пользователя
-        function loadPrefs() {
-            const p = JSON.parse(localStorage.getItem('fPrefs')) || {acc: '#0077FF', blr: 15, cmp: false};
-            document.getElementById('set-accent').value = p.acc;
-            document.getElementById('set-blur').value = p.blr;
-            document.getElementById('set-compact').checked = p.cmp;
-            applyPrefs(p);
+        // Инициализация дефолтов
+        function init() {
+            const saved = JSON.parse(localStorage.getItem('fConfig')) || { color: '#FF0000', blur: 100, compact: false };
+            document.getElementById('u-color').value = saved.color;
+            document.getElementById('u-blur').value = saved.blur;
+            document.getElementById('u-compact').checked = saved.compact;
+            updateUI(false);
         }
 
-        function savePrefs() {
-            const p = {
-                acc: document.getElementById('set-accent').value,
-                blr: document.getElementById('set-blur').value,
-                cmp: document.getElementById('set-compact').checked
-            };
-            localStorage.setItem('fPrefs', JSON.stringify(p));
-            applyPrefs(p);
-        }
+        function updateUI(save = true) {
+            const color = document.getElementById('u-color').value;
+            const blur = document.getElementById('u-blur').value;
+            const compact = document.getElementById('u-compact').checked;
 
-        function applyPrefs(p) {
-            document.documentElement.style.setProperty('--accent', p.acc);
-            document.documentElement.style.setProperty('--blur', p.blr + 'px');
-            document.getElementById('b-root').classList.toggle('compact', p.cmp);
-            document.getElementById('glow').style.background = `radial-gradient(circle at 15% 15%, ${p.acc}15 0%, transparent 40%), radial-gradient(circle at 85% 85%, ${p.acc}15 0%, transparent 40%)`;
+            document.documentElement.style.setProperty('--accent', color);
+            document.documentElement.style.setProperty('--blur', blur + 'px');
+            document.getElementById('b-root').classList.toggle('compact', compact);
+            document.getElementById('glow').style.background = `radial-gradient(circle at 20% 20%, ${color} 0%, transparent 40%), radial-gradient(circle at 80% 80%, ${color} 0%, transparent 40%)`;
+
+            if(save) localStorage.setItem('fConfig', JSON.stringify({ color, blur, compact }));
         }
 
         db.ref('players').on('value', snap => {
@@ -186,69 +200,78 @@
             renderAll();
         });
 
-        function switchMainMode(m) {
-            mainMode = m;
-            document.getElementById('nav-global').classList.toggle('active', m === 'global');
-            document.getElementById('nav-filter').classList.toggle('active', m === 'filter');
-            document.getElementById('filter-controls').classList.toggle('hidden', m === 'global');
+        function setMainMode(m) {
+            mode = m;
+            document.querySelectorAll('.sub-nav:first-child .nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('m-'+m).classList.add('active');
+            document.getElementById('srv-select').classList.toggle('hidden', m !== 'tiers');
+            renderAll();
+        }
+
+        function setDevice(d) {
+            device = d;
+            document.querySelectorAll('.sub-nav:nth-child(4) .nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('d-'+d).classList.add('active');
             renderAll();
         }
 
         function setServer(s, el) {
-            currentServer = s;
-            document.querySelectorAll('#filter-controls .nav-btn').forEach(b => b.classList.remove('active'));
+            server = s;
+            document.querySelectorAll('#srv-select .nav-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
             renderAll();
         }
 
         function renderAll() {
-            const g = document.getElementById('global-display');
-            const t = document.getElementById('tiers-display');
-            const s = document.getElementById('search').value.toLowerCase();
+            const area = document.getElementById('display-area');
+            const search = document.getElementById('search').value.toLowerCase();
+            area.innerHTML = '';
 
-            if(mainMode === 'global') {
-                t.classList.add('hidden'); g.classList.remove('hidden'); g.innerHTML = '';
-                players.filter(p => p.rank > 0 && p.name.toLowerCase().includes(s))
-                    .sort((a,b) => a.rank - b.rank)
-                    .forEach(p => {
-                        g.innerHTML += `<div class="player-card" onclick="openBio('${p.name}')"><div class="rank-num">#${p.rank}</div><div class="skin-box"><img src="https://minotar.net/helm/${p.name}/60.png"></div><div><b>${p.name}</b><br><small>${p.server} | ${p.tier}</small></div></div>`;
-                    });
+            if (mode === 'global') {
+                const grid = document.createElement('div'); grid.className = 'global-grid';
+                const filtered = players.filter(p => p.device === device && p.rank > 0 && p.name.toLowerCase().includes(search)).sort((a,b) => a.rank - b.rank);
+                filtered.forEach(p => {
+                    grid.innerHTML += `<div class="player-card" onclick="openBio('${p.name}')"><div class="rank-num">#${p.rank}</div><div class="skin-box"><img src="https://minotar.net/helm/${p.name}/60.png"></div><div><b>${p.name}</b><br><small>${p.server.toUpperCase()} | ${p.tier}</small></div></div>`;
+                });
+                area.appendChild(grid);
             } else {
-                g.classList.add('hidden'); t.classList.remove('hidden'); t.innerHTML = '';
-                ["HT1", "HT2", "HT3", "MT1", "MT2", "LT1", "LT2", "LT3"].forEach(tr => {
-                    const filtered = players.filter(p => p.server === currentServer && p.tier === tr && p.name.toLowerCase().includes(s));
+                const list = (mode === 'tiers') ? ["HT1", "HT2", "HT3", "MT1", "MT2", "LT1", "LT2", "LT3"] : ["BT1", "BT2", "BT3", "BT4", "BT5"];
+                list.forEach(t => {
+                    const filtered = players.filter(p => p.device === device && p.tier === t && (mode === 'bows' ? p.type === 'bow' : p.type === 'sword') && p.name.toLowerCase().includes(search) && (mode === 'bows' || p.server === server));
                     if(filtered.length > 0) {
-                        t.innerHTML += `<div class="tier-row"><div class="tier-label">${tr}</div><div class="players-wrap">${filtered.map(p => `<div class="p-tag" onclick="openBio('${p.name}')">${p.name}</div>`).join('')}</div></div>`;
+                        area.innerHTML += `<div class="tier-row"><div class="tier-label">${t}</div><div class="players-wrap">${filtered.map(p => `<div class="p-tag" onclick="openBio('${p.name}')">${p.name}</div>`).join('')}</div></div>`;
                     }
                 });
             }
         }
 
-        function saveToDB() {
-            const n = document.getElementById('a-name').value;
-            const tr = document.getElementById('a-tier').value;
-            const r = parseInt(document.getElementById('a-rank').value) || 0;
-            const s = document.getElementById('a-srv').value;
-            if(n && tr) db.ref('players/' + n).set({name: n, tier: tr, rank: r, server: s, bio: ""});
+        function saveData() {
+            const name = document.getElementById('adm-name').value;
+            const tier = document.getElementById('adm-tier').value;
+            const rank = parseInt(document.getElementById('adm-rank').value) || 0;
+            const dev = document.getElementById('adm-dev').value;
+            const type = document.getElementById('adm-type').value;
+            const srv = document.getElementById('adm-srv').value;
+            if(name) db.ref('players/' + name).set({ name, tier, rank, device: dev, type, server: srv, bio: "" });
         }
 
-        function deleteFromDB() {
-            const n = document.getElementById('a-name').value;
-            if(n && confirm("Удалить?")) db.ref('players/' + n).remove();
+        function deleteData() {
+            const name = document.getElementById('adm-name').value;
+            if(name && confirm("Удалить?")) db.ref('players/' + name).remove();
         }
 
         function openBio(n) {
             const p = players.find(x => x.name === n);
-            document.getElementById('m-name').innerText = p.name;
-            document.getElementById('m-bio').innerText = p.bio || "Биография не указана.";
-            document.getElementById('m-img').src = `https://minotar.net/helm/${p.name}/100.png`;
+            document.getElementById('b-name').innerText = p.name;
+            document.getElementById('b-img').src = `https://minotar.net/helm/${p.name}/100.png`;
+            document.getElementById('b-info').innerHTML = `Устройство: ${p.device.toUpperCase()}<br>Тир: ${p.tier}<br>Сервер: ${p.server.toUpperCase()}<br><br>${p.bio || "Описание отсутствует."}`;
             toggleModal('bio-modal');
         }
 
         function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
-        function auth() { if(btoa(prompt("Pass:")) === SECRET_HASH) document.getElementById('admin-panel').classList.remove('hidden'); }
-        
-        window.onload = loadPrefs;
+        function auth() { if(btoa(prompt("Пароль:")) === SECRET) document.getElementById('admin-panel').classList.remove('hidden'); }
+
+        init();
     </script>
 </body>
 </html>

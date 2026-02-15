@@ -3,93 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FishTiers | Stable</title>
+    <title>FishTiers | Final</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
         
-        :root {
-            --accent: #FF0000;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
         body {
-            font-family: 'Montserrat', sans-serif; background: #000;
-            color: #fff; margin: 0; padding-bottom: 100px;
+            font-family: 'Montserrat', sans-serif;
+            background: #0a0a0a; color: #fff; margin: 0; padding-bottom: 120px;
         }
 
-        .header { padding: 15px; background: #0a0a0a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-        .logo { font-weight: 900; font-size: 20px; }
-        .logo span { color: var(--accent); }
+        .header {
+            padding: 20px; background: #111; border-bottom: 2px solid #f00;
+            display: flex; justify-content: space-between; align-items: center;
+        }
 
-        .container { max-width: 1000px; margin: auto; padding: 20px; }
-        .section-title { font-size: 10px; color: #666; text-transform: uppercase; margin: 20px 0 10px; text-align: center; letter-spacing: 2px; }
+        .container { max-width: 900px; margin: auto; padding: 10px; }
 
-        .sub-nav { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
-        .nav-btn { background: var(--glass); border: 1px solid var(--border); color: #fff; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-        .nav-btn.active { background: var(--accent); border-color: var(--accent); }
+        .nav-group { display: flex; justify-content: center; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
+        
+        .btn {
+            background: #222; border: 1px solid #444; color: #fff;
+            padding: 10px 20px; border-radius: 5px; cursor: pointer;
+            font-weight: 700; text-transform: uppercase; font-size: 12px;
+        }
 
-        .tier-row { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; display: flex; overflow: hidden; }
-        .tier-label { width: 60px; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--accent); }
-        .players-wrap { padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
-        .p-tag { background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid var(--border); }
+        .btn.active { background: #f00; border-color: #f00; }
 
-        .player-card { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; }
-        .rank-num { font-size: 20px; font-weight: 900; opacity: 0.3; width: 40px; }
-        .skin { width: 45px; height: 45px; border-radius: 8px; }
+        /* Карточка в топе */
+        .card {
+            background: #161616; border: 1px solid #333; padding: 15px;
+            margin-bottom: 10px; display: flex; align-items: center; border-radius: 10px;
+        }
+        .rank { font-size: 24px; margin-right: 20px; color: #f00; width: 40px; }
+        .skin { width: 40px; height: 40px; margin-right: 15px; border-radius: 5px; }
 
-        .admin-panel { position: fixed; bottom: 0; left: 0; width: 100%; background: #0a0a0a; padding: 15px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; border-top: 2px solid var(--accent); z-index: 999; }
-        .adm-in { background: #111; border: 1px solid #333; color: #fff; padding: 5px; font-size: 11px; border-radius: 4px; }
+        /* Строка тира */
+        .tier-row {
+            background: #161616; border: 1px solid #333; border-radius: 10px;
+            margin-bottom: 10px; display: flex; overflow: hidden;
+        }
+        .tier-label {
+            background: #f00; color: #fff; padding: 15px;
+            font-weight: 900; width: 50px; text-align: center;
+        }
+        .p-list { padding: 10px; display: flex; flex-wrap: wrap; gap: 10px; }
+        .p-item { background: #333; padding: 5px 12px; border-radius: 5px; font-size: 14px; }
 
+        .admin-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #111; padding: 15px; border-top: 2px solid #f00;
+            display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; z-index: 1000;
+        }
+        
+        input, select { background: #000; color: #fff; border: 1px solid #555; padding: 5px; border-radius: 3px; }
+        
         .hidden { display: none !important; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
     </style>
 </head>
 <body>
 
-<header class="header">
-    <div class="logo">FISH<span>TIERS</span></div>
-    <input type="text" id="search" class="adm-in" placeholder="Поиск..." oninput="render()">
-</header>
+<div class="header">
+    <div style="font-weight:900; font-size:24px;">FISH<span style="color:#f00">TIERS</span></div>
+    <input type="text" id="search" placeholder="Поиск..." oninput="render()">
+</div>
 
 <div class="container">
-    <div class="section-title">Режим</div>
-    <div class="sub-nav">
-        <button class="nav-btn active" onclick="setMode('global', this)">Топ</button>
-        <button class="nav-btn" onclick="setMode('sword', this)">Мечи</button>
-        <button class="nav-btn" onclick="setMode('bow', this)">Луки</button>
+    <div class="nav-group">
+        <button class="btn active" onclick="setMode('global', this)">Глобальный ТОП</button>
+        <button class="btn" onclick="setMode('sword', this)">Мечи</button>
+        <button class="btn" onclick="setMode('bow', this)">Луки</button>
     </div>
 
-    <div class="section-title">Сервер</div>
-    <div class="sub-nav">
-        <button class="nav-btn active" onclick="setSrv('all', this)">Все</button>
-        <button class="nav-btn" onclick="setSrv('ugame', this)">UGAME</button>
-        <button class="nav-btn" onclick="setSrv('breadix', this)">BREADIX</button>
-        <button class="nav-btn" onclick="setSrv('minenex', this)">MINENEX</button>
+    <div class="nav-group">
+        <button class="btn active" onclick="setSrv('all', this)">Все Сервера</button>
+        <button class="btn" onclick="setSrv('ugame', this)">UGAME</button>
+        <button class="btn" onclick="setSrv('breadix', this)">BREADIX</button>
+        <button class="btn" onclick="setSrv('minenex', this)">MINENEX</button>
     </div>
 
-    <div id="view" class="grid"></div>
+    <div id="content"></div>
 </div>
 
-<div id="admin" class="admin-panel hidden">
-    <input type="text" id="a-name" class="adm-in" placeholder="Ник">
-    <input type="text" id="a-tier" class="adm-in" placeholder="HT1" style="width:40px">
-    <input type="number" id="a-rank" class="adm-in" placeholder="Ранг" style="width:40px">
-    <select id="a-srv" class="adm-in">
-        <option value="ugame">UGAME</option><option value="breadix">BREADIX</option><option value="minenex">MINENEX</option>
+<div id="admin-ui" class="admin-bar hidden">
+    <input type="text" id="in-name" placeholder="Ник">
+    <input type="text" id="in-tier" placeholder="HT1" style="width:50px">
+    <input type="number" id="in-rank" placeholder="Ранг" style="width:50px">
+    <select id="in-srv">
+        <option value="ugame">UGAME</option>
+        <option value="breadix">BREADIX</option>
+        <option value="minenex">MINENEX</option>
     </select>
-    <select id="a-type" class="adm-in">
-        <option value="sword">Меч</option><option value="bow">Лук</option>
+    <select id="in-type">
+        <option value="sword">Меч</option>
+        <option value="bow">Лук</option>
     </select>
-    <label style="font-size:10px"><input type="checkbox" id="a-glob"> Топ?</label>
-    <button onclick="save()" class="nav-btn" style="background:green">OK</button>
-    <button onclick="del()" class="nav-btn" style="background:maroon">DEL</button>
+    <label><input type="checkbox" id="in-glob"> В ТОП</label>
+    <button onclick="save()" style="background:green; color:#fff; border:none; padding:5px 15px; cursor:pointer;">СОХРАНИТЬ</button>
+    <button onclick="del()" style="background:red; color:#fff; border:none; padding:5px 15px; cursor:pointer;">УДАЛИТЬ</button>
 </div>
 
-<div style="text-align:center; opacity:0.1; font-size:10px;" onclick="auth()">ADMIN</div>
+<div style="text-align:center; padding: 20px; opacity:0.2;" onclick="auth()">ADMIN</div>
 
 <script>
     const firebaseConfig = {
@@ -105,105 +121,100 @@
     const db = firebase.database();
 
     let players = [];
-    let mode = 'global', srv = 'all';
+    let curMode = 'global';
+    let curSrv = 'all';
 
-    db.ref('players').on('value', s => {
-        players = s.val() ? Object.values(s.val()) : [];
+    db.ref('players').on('value', snap => {
+        const val = snap.val();
+        players = val ? Object.values(val) : [];
         render();
     });
 
     function render() {
-        const out = document.getElementById('view');
-        const q = document.getElementById('search').value.toLowerCase();
-        out.innerHTML = '';
+        const container = document.getElementById('content');
+        const searchQ = document.getElementById('search').value.toLowerCase();
+        container.innerHTML = '';
 
-        let filtered = players.filter(p => {
-            const mSrv = srv === 'all' || p.srv === srv;
-            const mName = p.name.toLowerCase().includes(q);
-            const mType = mode === 'global' ? p.isGlob : p.type === mode;
-            return mSrv && mName && mType;
+        let list = players.filter(p => {
+            const matchSrv = curSrv === 'all' || p.srv === curSrv;
+            const matchName = p.name.toLowerCase().includes(searchQ);
+            const matchType = curMode === 'global' ? p.isGlob : p.type === curMode;
+            return matchSrv && matchName && matchType;
         });
 
-        // Сортировка по рангу (1 выше 2)
-        filtered.sort((a,b) => a.rank - b.rank);
+        // Сортировка: ранг 1 выше ранга 2
+        list.sort((a, b) => (a.rank || 99) - (b.rank || 99));
 
-        if(mode === 'global') {
-            out.className = 'grid';
-            filtered.forEach(p => {
-                out.innerHTML += `<div class="player-card">
-                    <div class="rank-num">#${p.rank}</div>
-                    <img src="https://minotar.net/helm/${p.name}/45.png" class="skin">
-                    <div><b>${p.name}</b><br><small>${p.srv.toUpperCase()} | ${p.tier}</small></div>
-                </div>`;
-            });
-        } else {
-            out.className = '';
-            const tiers = ["HT1","HT2","HT3","MT1","MT2","LT1","LT2","LT3"];
-            tiers.forEach(t => {
-                const ps = filtered.filter(p => p.tier === t);
-                if(ps.length) {
-                    out.innerHTML += `<div class="tier-row">
-                        <div class="tier-label">${t}</div>
-                        <div class="players-wrap">
-                            ${ps.map(p => `<div class="p-tag">${p.name}</div>`).join('')}
+        if (curMode === 'global') {
+            list.forEach(p => {
+                container.innerHTML += `
+                    <div class="card">
+                        <div class="rank">#${p.rank}</div>
+                        <img src="https://minotar.net/helm/${p.name}/40.png" class="skin">
+                        <div>
+                            <div style="font-weight:900;">${p.name}</div>
+                            <div style="font-size:12px; color:#aaa;">${p.srv.toUpperCase()} | ${p.tier}</div>
                         </div>
                     </div>`;
+            });
+        } else {
+            const tiers = ["HT1", "HT2", "HT3", "MT1", "MT2", "LT1", "LT2", "LT3"];
+            tiers.forEach(t => {
+                const inTier = list.filter(p => p.tier === t);
+                if (inTier.length) {
+                    container.innerHTML += `
+                        <div class="tier-row">
+                            <div class="tier-label">${t}</div>
+                            <div class="p-list">
+                                ${inTier.map(p => `<div class="p-item">${p.name}</div>`).join('')}
+                            </div>
+                        </div>`;
                 }
             });
         }
     }
 
-    function setMode(m, e) {
-        mode = m;
-        document.querySelectorAll('.sub-nav:nth-of-type(1) .nav-btn').forEach(b => b.classList.remove('active'));
-        e.classList.add('active');
+    function setMode(m, el) {
+        curMode = m;
+        document.querySelectorAll('.nav-group:first-of-type .btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
         render();
     }
 
-    function setSrv(s, e) {
-        srv = s;
-        document.querySelectorAll('.sub-nav:nth-of-type(2) .nav-btn').forEach(b => b.classList.remove('active'));
-        e.classList.add('active');
+    function setSrv(s, el) {
+        curSrv = s;
+        document.querySelectorAll('.nav-group:last-of-type .btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
         render();
     }
 
     function save() {
-        const n = document.getElementById('a-name').value;
-        if(!n) return;
-        db.ref('players/'+n).set({
-            name: n,
-            tier: document.getElementById('a-tier').value.toUpperCase(),
-            rank: parseInt(document.getElementById('a-rank').value) || 99,
-            srv: document.getElementById('a-srv').value,
-            type: document.getElementById('a-type').value,
-            isGlob: document.getElementById('a-glob').checked
+        const name = document.getElementById('in-name').value.trim();
+        if (!name) return alert("Ник!");
+        db.ref('players/' + name).set({
+            name: name,
+            tier: document.getElementById('in-tier').value.toUpperCase() || 'LT3',
+            rank: parseInt(document.getElementById('in-rank').value) || 99,
+            srv: document.getElementById('in-srv').value,
+            type: document.getElementById('in-type').value,
+            isGlob: document.getElementById('in-glob').checked
         });
     }
 
     function del() {
-        const n = document.getElementById('a-name').value;
-        if(n) db.ref('players/'+n).remove();
+        const name = document.getElementById('in-name').value.trim();
+        if (name && confirm("Удалить?")) db.ref('players/' + name).remove();
     }
 
-    function auth() { if(prompt("Pass") === "123") document.getElementById('admin').classList.remove('hidden'); }
+    function auth() {
+        if (prompt("Пароль") === "123") {
+            document.getElementById('admin-ui').classList.remove('hidden');
+        }
+    }
 </script>
-
 </body>
 </html>
--panel hidden">
-        <input type="text" id="adm-name" class="admin-input" placeholder="Ник" style="width:100px">
-        <input type="text" id="adm-tier" class="admin-input" style="width:50px" placeholder="HT1">
-        <input type="number" id="adm-rank-dev" class="admin-input" style="width:50px" placeholder="Место">
-        <input type="number" id="adm-rank-glob" class="admin-input" style="width:50px" placeholder="Топ">
-        <select id="adm-dev" class="admin-input"><option value="pc">PC</option><option value="gp">GP</option><option value="pe">PE</option></select>
-        <select id="adm-type" class="admin-input"><option value="sword">Меч</option><option value="bow">Лук</option></select>
-        <select id="adm-srv" class="admin-input"><option value="ugame">UGAME</option><option value="breadix">BREADIX</option><option value="minenex">MINENEX</option></select>
-        <input type="text" id="adm-bio" class="admin-input" placeholder="Био" style="width:100px">
-        <label style="font-size: 9px; color:white; display:flex; align-items:center; gap:3px;"><input type="checkbox" id="adm-global"> GLOB</label>
-        <button class="admin-btn" onclick="saveData()">СОХРАНИТЬ</button>
-        <button class="admin-btn" style="background:#333" onclick="deleteData()">УДАЛИТЬ</button>
-    </div>
-    <div style="position:fixed; bottom:5px; right:10px; font-size:8px; opacity:0.1; cursor:pointer;" onclick="auth()">ADMIN</div>
+e:8px; opacity:0.1; cursor:pointer;" onclick="auth()">ADMIN</div>
 
     <script>
         const firebaseConfig = {

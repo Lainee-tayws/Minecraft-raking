@@ -47,7 +47,7 @@
         .nav-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 25px rgba(255,0,0,0.3); }
 
         .tier-row { background: var(--glass); backdrop-filter: blur(var(--blur)); border-radius: 20px; margin-bottom: 12px; border: 1px solid var(--glass-border); display: flex; }
-        .tier-label { width: 70px; display: flex; align-items: center; justify-content: center; font-weight: 900; background: rgba(0,0,0,0.3); color: var(--accent); font-size: 20px; }
+        .tier-label { width: 75px; display: flex; align-items: center; justify-content: center; font-weight: 900; background: rgba(0,0,0,0.3); color: var(--accent); font-size: 18px; }
         .players-wrap { padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; }
         .p-tag { background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 10px; font-size: 14px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
         .p-tag:hover { border-color: var(--accent); background: rgba(255,0,0,0.1); }
@@ -139,12 +139,12 @@
 
     <div id="admin-panel" class="admin-panel hidden">
         <input type="text" id="adm-name" class="admin-input" placeholder="Ник">
-        <input type="text" id="adm-tier" class="admin-input" style="width:70px" placeholder="HT1/BT1">
+        <input type="text" id="adm-tier" class="admin-input" style="width:70px" placeholder="HT1/LT5">
         <input type="number" id="adm-rank" class="admin-input" style="width:60px" placeholder="Ранг#">
         <select id="adm-dev" class="admin-input">
             <option value="pc">PC</option><option value="gp">GP</option><option value="pe">PE</option><option value="all">GLOBAL ALL</option>
         </select>
-        <select id="adm-type" class="admin-input"><option value="sword">Меч</option><option value="bow">Лук</option></select>
+        <select id="adm-type" class="admin-input"><option value="sword">Меч (Sword)</option><option value="bow">Лук (Bow)</option></select>
         <select id="adm-srv" class="admin-input"><option value="ugame">UGAME</option><option value="breadix">BREADIX</option><option value="minenex">MINENEX</option></select>
         <button class="admin-btn" onclick="saveData()">SAVE</button>
         <button class="admin-btn" style="background:#444" onclick="deleteData()">DEL</button>
@@ -170,6 +170,9 @@
         let curServer = 'ugame';
         const SECRET = "ZG9pcnN5MTIz"; 
 
+        const swordTiers = ["HT1", "HT2", "HT3", "MT1", "MT2", "LT1", "LT2", "LT3"];
+        const bowTiers = ["HT1", "HT2", "HT3", "HT4", "HT5", "MT1", "MT2", "MT3", "MT4", "MT5", "LT1", "LT2", "LT3", "LT4", "LT5"];
+
         function init() {
             const s = JSON.parse(localStorage.getItem('fCfg')) || { color: '#FF0000', blur: 100, cmp: false };
             document.getElementById('u-color').value = s.color;
@@ -185,6 +188,7 @@
             document.documentElement.style.setProperty('--accent', c);
             document.documentElement.style.setProperty('--blur', b + 'px');
             document.getElementById('b-root').classList.toggle('compact', cp);
+            document.getElementById('glow').style.background = `radial-gradient(circle at 20% 20%, ${c} 0%, transparent 40%), radial-gradient(circle at 80% 80%, ${c} 0%, transparent 40%)`;
             if(save) localStorage.setItem('fCfg', JSON.stringify({ color: c, blur: b, cmp: cp }));
         }
 
@@ -222,12 +226,9 @@
 
             if (curMode === 'global') {
                 const grid = document.createElement('div'); grid.className = 'global-grid';
-                // Фильтрация: если ALL - берем всех с рангом, иначе фильтруем по девайсу
                 const filtered = players.filter(p => {
-                    const matchDevice = (curDevice === 'all' || p.device === curDevice);
-                    const hasRank = p.rank > 0;
-                    const matchSearch = p.name.toLowerCase().includes(search);
-                    return matchDevice && hasRank && matchSearch;
+                    const matchDevice = (curDevice === 'all' || p.device === curDevice || p.device === 'all');
+                    return matchDevice && p.rank > 0 && p.name.toLowerCase().includes(search);
                 }).sort((a,b) => a.rank - b.rank);
 
                 filtered.forEach(p => {
@@ -235,15 +236,13 @@
                 });
                 area.appendChild(grid);
             } else {
-                const tiers = (curMode === 'tiers') ? ["HT1", "HT2", "HT3", "MT1", "MT2", "LT1", "LT2", "LT3"] : ["BT1", "BT2", "BT3", "BT4", "BT5"];
-                tiers.forEach(t => {
+                const activeTiers = (curMode === 'tiers') ? swordTiers : bowTiers;
+                activeTiers.forEach(t => {
                     const filtered = players.filter(p => {
-                        const matchDevice = (curDevice === 'all' || p.device === curDevice);
-                        const matchTier = p.tier === t;
+                        const matchDevice = (curDevice === 'all' || p.device === curDevice || p.device === 'all');
                         const matchType = (curMode === 'bows' ? p.type === 'bow' : p.type === 'sword');
-                        const matchSearch = p.name.toLowerCase().includes(search);
                         const matchServer = (curMode === 'bows' || p.server === curServer);
-                        return matchDevice && matchTier && matchType && matchSearch && matchServer;
+                        return matchDevice && p.tier === t && matchType && matchServer && p.name.toLowerCase().includes(search);
                     });
                     if(filtered.length > 0) {
                         area.innerHTML += `<div class="tier-row"><div class="tier-label">${t}</div><div class="players-wrap">${filtered.map(p => `<div class="p-tag" onclick="openBio('${p.name}')">${p.name}</div>`).join('')}</div></div>`;
@@ -253,25 +252,28 @@
         }
 
         function saveData() {
-            const n = document.getElementById('adm-name').value;
-            const t = document.getElementById('adm-tier').value;
+            const n = document.getElementById('adm-name').value.trim();
+            const t = document.getElementById('adm-tier').value.trim().toUpperCase();
             const r = parseInt(document.getElementById('adm-rank').value) || 0;
             const d = document.getElementById('adm-dev').value;
             const ty = document.getElementById('adm-type').value;
             const s = document.getElementById('adm-srv').value;
-            if(n) db.ref('players/' + n).set({ name: n, tier: t, rank: r, device: d, type: ty, server: s, bio: "" });
+            if(n && t) {
+                db.ref('players/' + n).set({ name: n, tier: t, rank: r, device: d, type: ty, server: s, bio: "" })
+                .then(() => alert("Сохранено!"));
+            }
         }
 
         function deleteData() {
             const n = document.getElementById('adm-name').value;
-            if(n && confirm("Удалить?")) db.ref('players/' + n).remove();
+            if(n && confirm("Удалить игрока " + n + "?")) db.ref('players/' + n).remove();
         }
 
         function openBio(n) {
             const p = players.find(x => x.name === n);
             document.getElementById('b-name').innerText = p.name;
             document.getElementById('b-img').src = `https://minotar.net/helm/${p.name}/100.png`;
-            document.getElementById('b-info').innerHTML = `Устройство: ${p.device.toUpperCase()}<br>Тир: ${p.tier}<br>Сервер: ${p.server.toUpperCase()}`;
+            document.getElementById('b-info').innerHTML = `Device: ${p.device.toUpperCase()}<br>Tier: ${p.tier}<br>Server: ${p.server.toUpperCase()}<br>Type: ${p.type === 'bow' ? 'Bow' : 'Sword'}`;
             toggleModal('bio-modal');
         }
 

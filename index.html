@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FishTiers | Protected Cloud</title>
+    <title>FishTiers | User Custom Cloud</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
@@ -15,96 +15,112 @@
             --accent: #0077FF;
             --text: #ffffff;
             --text-dim: #888;
+            --blur: 15px;
         }
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: #08090b;
-            background-image: radial-gradient(circle at 15% 15%, rgba(0, 119, 255, 0.07) 0%, transparent 40%), radial-gradient(circle at 85% 85%, rgba(0, 119, 255, 0.07) 0%, transparent 40%);
-            color: var(--text); margin: 0; min-height: 100vh; background-attachment: fixed;
+            font-family: 'Montserrat', sans-serif; background: #08090b;
+            color: var(--text); margin: 0; min-height: 100vh; overflow-x: hidden;
+        }
+        .bg-glow {
+            position: fixed; width: 100vw; height: 100vh; z-index: -1;
+            background: radial-gradient(circle at 15% 15%, rgba(0, 119, 255, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 85% 85%, rgba(0, 119, 255, 0.1) 0%, transparent 40%);
+            transition: 0.5s;
         }
         .header { background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(20px); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100; }
-        .logo { font-weight: 900; font-size: 24px; cursor: pointer; text-transform: uppercase; }
+        .logo { font-weight: 900; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--accent); }
-        .search-box { background: var(--glass); border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 30px; color: white; outline: none; width: 200px; transition: 0.3s; }
-        .search-box:focus { border-color: var(--accent); width: 250px; }
+        
+        .header-tools { display: flex; align-items: center; gap: 15px; }
+        .search-box { background: var(--glass); border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 30px; color: white; outline: none; width: 150px; transition: 0.3s; }
+        .search-box:focus { width: 220px; border-color: var(--accent); }
+        .user-opt-btn { background: var(--glass); border: 1px solid var(--glass-border); color: white; padding: 10px; border-radius: 50%; cursor: pointer; transition: 0.3s; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        .user-opt-btn:hover { background: var(--accent); transform: rotate(45deg); }
+
         .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; padding-bottom: 150px; }
         .main-nav { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; }
         .nav-btn { background: var(--glass); border: 1px solid var(--glass-border); padding: 15px 30px; border-radius: 15px; cursor: pointer; font-weight: 800; color: var(--text-dim); text-transform: uppercase; transition: 0.3s; font-size: 12px; }
-        .nav-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 30px rgba(0,119,255,0.3); }
-        .hidden { display: none !important; }
-        .tier-row { background: var(--glass); backdrop-filter: blur(10px); border-radius: 16px; margin-bottom: 10px; border: 1px solid var(--glass-border); display: flex; }
-        .tier-label { width: 70px; display: flex; align-items: center; justify-content: center; font-weight: 900; background: rgba(0,0,0,0.2); color: var(--accent); font-size: 18px; }
-        .players-wrap { padding: 12px; display: flex; flex-wrap: wrap; gap: 10px; }
-        .p-tag { background: rgba(255,255,255,0.05); padding: 6px 14px; border-radius: 8px; font-size: 14px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
-        .p-tag:hover { border-color: var(--accent); background: rgba(0,119,255,0.1); }
-        .global-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 15px; }
-        .player-card { background: var(--glass); backdrop-filter: blur(15px); border-radius: 18px; padding: 15px; display: flex; align-items: center; border: 1px solid var(--glass-border); transition: 0.3s; cursor: pointer; }
+        .nav-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 30px rgba(0,119,255,0.2); }
+        
+        .player-card { background: var(--glass); backdrop-filter: blur(var(--blur)); border-radius: 18px; padding: 15px; display: flex; align-items: center; border: 1px solid var(--glass-border); transition: 0.3s; cursor: pointer; }
         .player-card:hover { border-color: var(--accent); transform: translateY(-3px); }
-        .rank-num { font-weight: 900; font-size: 24px; width: 45px; opacity: 0.5; }
-        .rank-1 { border: 1px solid #ffd700; background: rgba(255,215,0,0.05); }
-        .rank-1 .rank-num { color: #ffd700; opacity: 1; }
-        .skin-box { width: 55px; height: 55px; background: #000; border-radius: 12px; margin-right: 15px; overflow: hidden; }
-        .skin-box img { width: 100%; image-rendering: pixelated; }
-        .tier-badge { background: rgba(0,0,0,0.3); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; margin-top: 5px; border: 1px solid var(--glass-border); display: inline-block; }
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #13141a; border: 1px solid var(--glass-border); width: 90%; max-width: 450px; border-radius: 25px; padding: 35px; position: relative; }
+        
+        /* Компактный режим */
+        body.compact-mode .player-card { padding: 8px 12px; }
+        body.compact-mode .skin-box { width: 40px; height: 40px; }
+        body.compact-mode .rank-num { font-size: 18px; width: 35px; }
+
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); display: flex; justify-content: center; align-items: center; z-index: 1000; transition: 0.3s; }
+        .modal-content { background: rgba(20,20,25,0.9); border: 1px solid var(--glass-border); width: 90%; max-width: 400px; border-radius: 25px; padding: 30px; }
+        .setting-row { margin-bottom: 20px; }
+        .setting-row label { display: block; font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; font-weight: 700; }
+        
         .admin-panel { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 950px; background: rgba(10,10,12,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent); padding: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; z-index: 999; border-radius: 15px; }
         .admin-input { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 8px; font-size: 12px; outline: none; }
         .admin-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body>
-
+<body id="main-body">
+    <div class="bg-glow" id="glow"></div>
+    
     <header class="header">
         <div class="logo">FISH<span>TIERS</span></div>
-        <input type="text" class="search-box" id="search" placeholder="Поиск ника..." oninput="renderAll()">
+        <div class="header-tools">
+            <input type="text" class="search-box" id="search" placeholder="Поиск..." oninput="renderAll()">
+            <button class="user-opt-btn" onclick="openUserModal()">🎨</button>
+        </div>
     </header>
 
     <div class="container">
         <div class="main-nav">
-            <div id="nav-global" class="nav-btn active" onclick="switchMainMode('global')">Глобальный топ</div>
-            <div id="nav-filter" class="nav-btn" onclick="switchMainMode('filter')">Фильтр по серверам</div>
+            <div id="nav-global" class="nav-btn active" onclick="switchMainMode('global')">🏆 Глобальный</div>
+            <div id="nav-filter" class="nav-btn" onclick="switchMainMode('filter')">📂 Серверы</div>
         </div>
-
         <div id="filter-controls" class="hidden">
-            <div style="text-align:center; font-size:10px; color:#555; letter-spacing:2px; margin-bottom:10px;">ВЫБЕРИТЕ СЕРВЕР</div>
-            <div class="grid-flex" id="server-group" style="margin-bottom:20px; display:flex; justify-content:center; gap:10px;">
-                <div class="nav-btn" style="padding:10px 20px;" onclick="setServer('ugame', this)">UGAME</div>
-                <div class="nav-btn" style="padding:10px 20px;" onclick="setServer('breadix', this)">BREADIX</div>
-                <div class="nav-btn" style="padding:10px 20px;" onclick="setServer('minenex', this)">MINENEX</div>
+            <div id="server-group" style="display:flex; justify-content:center; gap:10px;">
+                <div class="nav-btn active" onclick="setServer('ugame', this)">UGAME</div>
+                <div class="nav-btn" onclick="setServer('breadix', this)">BREADIX</div>
             </div>
         </div>
-
         <div id="tiers-display" style="margin-top: 30px;"></div>
-        <div id="global-display" class="global-grid"></div>
+        <div id="global-display" class="global-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;"></div>
+    </div>
+
+    <div id="user-modal" class="modal-overlay hidden" onclick="closeUserModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 style="margin-top:0; font-weight:900;">ВИЗУАЛ</h2>
+            <div class="setting-row">
+                <label>Цвет твоей темы</label>
+                <input type="color" id="u-accent" onchange="applyUserPrefs()" style="width:100%; height:40px; border:none; background:none; cursor:pointer;">
+            </div>
+            <div class="setting-row">
+                <label>Размытие панелей</label>
+                <input type="range" id="u-blur" min="0" max="30" oninput="applyUserPrefs()" style="width:100%;">
+            </div>
+            <div class="setting-row" style="display:flex; justify-content:space-between; align-items:center;">
+                <label style="margin:0;">Компактный вид</label>
+                <input type="checkbox" id="u-compact" onchange="applyUserPrefs()" style="width:20px; height:20px;">
+            </div>
+            <button onclick="closeUserModal()" class="admin-btn" style="width:100%; margin-top:10px;">ПРИМЕНИТЬ</button>
+        </div>
     </div>
 
     <div id="bio-modal" class="modal-overlay hidden" onclick="closeBio()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div style="display:flex; align-items:center; gap:20px;">
-                <img id="modal-img" src="" style="width:80px; height:80px; border-radius:15px; background:#000;">
-                <div>
-                    <div id="modal-name" style="font-size:26px; font-weight:900;"></div>
-                    <div id="modal-rank" style="color:var(--accent); font-weight:700; font-size:14px;"></div>
-                </div>
-            </div>
-            <div id="modal-tiers" style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;"></div>
-            <div id="modal-bio" style="margin-top:20px; background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--glass-border); line-height:1.5;"></div>
+            <div id="modal-name" style="font-size:26px; font-weight:900;"></div>
+            <div id="modal-bio" style="margin-top:20px; background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; line-height:1.5;"></div>
         </div>
     </div>
 
     <div id="admin-panel" class="admin-panel hidden">
         <input type="text" id="adm-name" class="admin-input" placeholder="Ник">
-        <select id="adm-srv" class="admin-input">
-            <option value="ugame">Ugame</option><option value="breadix">Breadix</option><option value="minenex">Minenex</option>
-        </select>
         <input type="text" id="adm-tier" class="admin-input" style="width:60px" placeholder="HT1">
         <input type="number" id="adm-rank" class="admin-input" style="width:60px" placeholder="Топ#">
-        <input type="text" id="adm-bio" class="admin-input" placeholder="Биография...">
-        <button class="admin-btn" onclick="addPlayer()">СОХРАНИТЬ</button>
-        <button class="admin-btn" style="background:#ff4747" onclick="deletePlayer()">УДАЛИТЬ</button>
+        <button class="admin-btn" onclick="addPlayer()">OK</button>
+        <button class="admin-btn" style="background:#444" onclick="location.reload()">REFRESH</button>
     </div>
-    <div style="position:fixed; bottom:5px; right:10px; font-size:9px; opacity:0.1; cursor:pointer; color:#fff;" onclick="adminAuth()">Admin</div>
+    <div style="position:fixed; bottom:5px; right:10px; font-size:9px; opacity:0.1; cursor:pointer;" onclick="adminAuth()">Admin</div>
 
     <script>
         const firebaseConfig = {
@@ -117,7 +133,6 @@
             appId: "1:887698034750:web:953f8fb88f215c7104816f",
             measurementId: "G-7WBG0SBK4X"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -125,27 +140,77 @@
         let currentServer = 'ugame';
         let mainMode = 'global';
 
-        // Зашифрованный пароль (doirsy123)
-        const SECRET_HASH = "ZG9pcnN5MTIz"; 
+        // Загрузка настроек пользователя
+        function loadUserPrefs() {
+            const prefs = JSON.parse(localStorage.getItem('userSettings')) || { accent: '#0077FF', blur: 15, compact: false };
+            document.getElementById('u-accent').value = prefs.accent;
+            document.getElementById('u-blur').value = prefs.blur;
+            document.getElementById('u-compact').checked = prefs.compact;
+            applyUserPrefs(false);
+        }
 
-        db.ref('players').on('value', (snapshot) => {
-            const data = snapshot.val();
-            players = data ? Object.values(data) : [];
+        function applyUserPrefs(save = true) {
+            const accent = document.getElementById('u-accent').value;
+            const blur = document.getElementById('u-blur').value;
+            const compact = document.getElementById('u-compact').checked;
+
+            document.documentElement.style.setProperty('--accent', accent);
+            document.documentElement.style.setProperty('--blur', blur + 'px');
+            document.getElementById('glow').style.background = `radial-gradient(circle at 15% 15%, ${accent}15 0%, transparent 40%), radial-gradient(circle at 85% 85%, ${accent}15 0%, transparent 40%)`;
+            document.getElementById('main-body').classList.toggle('compact-mode', compact);
+
+            if(save) localStorage.setItem('userSettings', JSON.stringify({ accent, blur, compact }));
+        }
+
+        db.ref('players').on('value', (snap) => {
+            players = snap.val() ? Object.values(snap.val()) : [];
             renderAll();
         });
 
-        function switchMainMode(mode) {
-            mainMode = mode;
-            document.getElementById('nav-global').classList.toggle('active', mode === 'global');
-            document.getElementById('nav-filter').classList.toggle('active', mode === 'filter');
-            document.getElementById('filter-controls').classList.toggle('hidden', mode === 'global');
-            renderAll();
+        function renderAll() {
+            const tiersDisplay = document.getElementById('tiers-display');
+            const globalDisplay = document.getElementById('global-display');
+            const search = document.getElementById('search').value.toLowerCase();
+
+            if (mainMode === 'filter') {
+                globalDisplay.classList.add('hidden');
+                tiersDisplay.classList.remove('hidden');
+                tiersDisplay.innerHTML = '';
+                ["HT1", "HT2", "HT3", "MT1", "MT2", "LT1", "LT2", "LT3"].forEach(t => {
+                    const filtered = players.filter(p => p.server === currentServer && p.tier === t && p.name.toLowerCase().includes(search));
+                    tiersDisplay.innerHTML += `<div class="tier-row"><div class="tier-label">${t}</div><div class="players-wrap">${filtered.map(p => `<div class="p-tag" onclick="showBio('${p.name}')">${p.name}</div>`).join('')}</div></div>`;
+                });
+            } else {
+                tiersDisplay.classList.add('hidden');
+                globalDisplay.classList.remove('hidden');
+                globalDisplay.innerHTML = '';
+                const sorted = players.filter(p => p.rank > 0 && p.name.toLowerCase().includes(search)).sort((a,b) => a.rank - b.rank);
+                sorted.forEach(p => {
+                    globalDisplay.innerHTML += `<div class="player-card ${p.rank === 1 ? 'rank-1' : ''}" onclick="showBio('${p.name}')"><div class="rank-num">#${p.rank}</div><div class="skin-box"><img src="https://minotar.net/helm/${p.name}/60.png"></div><div><b>${p.name}</b><br><small>${p.server.toUpperCase()} | ${p.tier}</small></div></div>`;
+                });
+            }
         }
 
-        function setServer(s, el) {
-            currentServer = s;
-            document.querySelectorAll('#server-group .nav-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
+        function addPlayer() {
+            const name = document.getElementById('adm-name').value;
+            const tier = document.getElementById('adm-tier').value;
+            const rank = document.getElementById('adm-rank').value;
+            if(name) db.ref('players/' + name).update({ name, tier, rank, server: currentServer });
+        }
+
+        function switchMainMode(m) { mainMode = m; document.getElementById('nav-global').classList.toggle('active', m === 'global'); document.getElementById('nav-filter').classList.toggle('active', m === 'filter'); document.getElementById('filter-controls').classList.toggle('hidden', m === 'global'); renderAll(); }
+        function setServer(s, el) { currentServer = s; document.querySelectorAll('#server-group .nav-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); renderAll(); }
+        function openUserModal() { document.getElementById('user-modal').classList.remove('hidden'); }
+        function closeUserModal() { document.getElementById('user-modal').classList.add('hidden'); }
+        function showBio(n) { const p = players.find(x => x.name === n); document.getElementById('modal-name').innerText = p.name; document.getElementById('modal-bio').innerText = p.bio || "Информации нет"; document.getElementById('bio-modal').classList.remove('hidden'); }
+        function closeBio() { document.getElementById('bio-modal').classList.add('hidden'); }
+        function adminAuth() { if(btoa(prompt("Pass:")) === "ZG9pcnN5MTIz") document.getElementById('admin-panel').classList.remove('hidden'); }
+
+        window.onload = loadUserPrefs;
+    </script>
+</body>
+</html>
+classList.add('active');
             renderAll();
         }
 

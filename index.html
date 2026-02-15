@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FishTiers | Manual Global Edition</title>
+    <title>FishTiers | Pro Management Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
@@ -35,7 +35,7 @@
         .logo { font-weight: 900; font-size: 26px; text-transform: uppercase; letter-spacing: 3px; }
         .logo span { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
 
-        .container { max-width: 1300px; margin: 20px auto; padding: 0 20px; padding-bottom: 150px; }
+        .container { max-width: 1300px; margin: 20px auto; padding: 0 20px; padding-bottom: 200px; }
         .section-title { text-align: center; margin: 30px 0 15px; font-size: 10px; letter-spacing: 4px; color: var(--text-dim); text-transform: uppercase; font-weight: 800; }
 
         .sub-nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -59,12 +59,11 @@
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #0a0a0a; border: 1px solid var(--glass-border); width: 90%; max-width: 450px; border-radius: 25px; padding: 30px; }
 
-        .admin-panel { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 1150px; background: #0a0a0c; border: 2px solid var(--accent); padding: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; z-index: 999; border-radius: 20px; align-items: center; }
-        .admin-input { background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 8px; font-size: 12px; outline: none; }
+        .admin-panel { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 1200px; background: #0a0a0c; border: 2px solid var(--accent); padding: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; z-index: 999; border-radius: 20px; align-items: center; }
+        .admin-input { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 8px; font-size: 12px; outline: none; }
         .admin-btn { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 900; }
 
         .hidden { display: none !important; }
-        body.compact .player-card { padding: 10px; }
     </style>
 </head>
 <body id="b-root">
@@ -114,9 +113,6 @@
                 <input type="color" id="u-color" onchange="updateUI()" style="width:100%; height:45px; border:none; background:none; cursor:pointer;"></div>
                 <div><label style="font-size:10px; color:var(--text-dim);">BLUR (0-100)</label>
                 <input type="range" id="u-blur" min="0" max="100" oninput="updateUI()" style="width:100%;"></div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                <label style="font-size:10px; color:var(--text-dim);">КОМПАКТНЫЙ ВИД</label>
-                <input type="checkbox" id="u-compact" onchange="updateUI()"></div>
             </div>
             <button class="admin-btn" style="width:100%; margin-top:25px;" onclick="toggleModal('user-modal')">ПРИМЕНИТЬ</button>
         </div>
@@ -128,22 +124,25 @@
                 <img id="b-img" src="" style="width:70px; height:70px; border-radius:12px; border:2px solid var(--accent);">
                 <h2 id="b-name" style="margin:0;"></h2>
             </div>
-            <div id="b-info" style="margin-top:20px; color:#aaa; font-size:14px; background:rgba(255,255,255,0.03); padding:15px; border-radius:15px;"></div>
+            <div id="b-info" style="margin-top:20px; color:var(--accent); font-weight: 700; font-size:12px; letter-spacing: 1px;">ИНФОРМАЦИЯ</div>
+            <div id="b-stats" style="color:#aaa; font-size:13px; margin: 10px 0;"></div>
+            <div id="b-bio-title" style="margin-top:15px; color:var(--accent); font-weight: 700; font-size:12px; letter-spacing: 1px;">БИОГРАФИЯ</div>
+            <div id="b-bio-text" style="color:#eee; font-size:14px; line-height: 1.6; background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; margin-top:10px; max-height: 200px; overflow-y: auto;"></div>
             <button class="admin-btn" style="width:100%; margin-top:20px;" onclick="toggleModal('bio-modal')">ЗАКРЫТЬ</button>
         </div>
     </div>
 
     <div id="admin-panel" class="admin-panel hidden">
-        <input type="text" id="adm-name" class="admin-input" placeholder="Ник">
-        <input type="text" id="adm-tier" class="admin-input" style="width:70px" placeholder="HT1/LT5">
-        <input type="number" id="adm-rank" class="admin-input" style="width:60px" placeholder="Ранг#">
-        <select id="adm-dev" class="admin-input">
-            <option value="pc">PC</option><option value="gp">GP</option><option value="pe">PE</option>
-        </select>
+        <input type="text" id="adm-name" class="admin-input" placeholder="Ник" style="width:100px">
+        <input type="text" id="adm-tier" class="admin-input" style="width:60px" placeholder="Тир">
+        <input type="number" id="adm-rank-dev" class="admin-input" style="width:75px" placeholder="Rank Dev">
+        <input type="number" id="adm-rank-glob" class="admin-input" style="width:75px" placeholder="Rank All">
+        <select id="adm-dev" class="admin-input"><option value="pc">PC</option><option value="gp">GP</option><option value="pe">PE</option></select>
         <select id="adm-type" class="admin-input"><option value="sword">Меч</option><option value="bow">Лук</option></select>
         <select id="adm-srv" class="admin-input"><option value="ugame">UGAME</option><option value="breadix">BREADIX</option><option value="minenex">MINENEX</option></select>
-        <div style="font-size: 10px; display: flex; align-items: center; gap: 5px;">
-            <input type="checkbox" id="adm-global"> <label for="adm-global">В ТОП ALL?</label>
+        <input type="text" id="adm-bio" class="admin-input" placeholder="Биография игрока..." style="width:150px">
+        <div style="font-size: 9px; display: flex; align-items: center; gap: 3px;">
+            <input type="checkbox" id="adm-global"> <label>В TOP ALL?</label>
         </div>
         <button class="admin-btn" onclick="saveData()">SAVE</button>
         <button class="admin-btn" style="background:#444" onclick="deleteData()">DEL</button>
@@ -164,31 +163,25 @@
         const db = firebase.database();
 
         let players = [];
-        let curMode = 'global'; 
-        let curDevice = 'all'; // Это вкладка TOP ALL
-        let curServer = 'ugame';
+        let curMode = 'global', curDevice = 'all', curServer = 'ugame';
         const SECRET = "ZG9pcnN5MTIz"; 
 
         const swordTiers = ["HT1", "HT2", "HT3", "MT1", "MT2", "LT1", "LT2", "LT3"];
         const bowTiers = ["HT1", "HT2", "HT3", "HT4", "HT5", "MT1", "MT2", "MT3", "MT4", "MT5", "LT1", "LT2", "LT3", "LT4", "LT5"];
 
         function init() {
-            const s = JSON.parse(localStorage.getItem('fCfg')) || { color: '#FF0000', blur: 100, cmp: false };
+            const s = JSON.parse(localStorage.getItem('fCfg')) || { color: '#FF0000', blur: 100 };
             document.getElementById('u-color').value = s.color;
             document.getElementById('u-blur').value = s.blur;
-            document.getElementById('u-compact').checked = s.cmp;
             updateUI(false);
         }
 
         function updateUI(save = true) {
-            const c = document.getElementById('u-color').value;
-            const b = document.getElementById('u-blur').value;
-            const cp = document.getElementById('u-compact').checked;
+            const c = document.getElementById('u-color').value, b = document.getElementById('u-blur').value;
             document.documentElement.style.setProperty('--accent', c);
             document.documentElement.style.setProperty('--blur', b + 'px');
-            document.getElementById('b-root').classList.toggle('compact', cp);
             document.getElementById('glow').style.background = `radial-gradient(circle at 20% 20%, ${c} 0%, transparent 40%), radial-gradient(circle at 80% 80%, ${c} 0%, transparent 40%)`;
-            if(save) localStorage.setItem('fCfg', JSON.stringify({ color: c, blur: b, cmp: cp }));
+            if(save) localStorage.setItem('fCfg', JSON.stringify({ color: c, blur: b }));
         }
 
         db.ref('players').on('value', snap => {
@@ -219,26 +212,27 @@
         }
 
         function renderAll() {
-            const area = document.getElementById('display-area');
-            const search = document.getElementById('search').value.toLowerCase();
+            const area = document.getElementById('display-area'), search = document.getElementById('search').value.toLowerCase();
             area.innerHTML = '';
 
             if (curMode === 'global') {
                 const grid = document.createElement('div'); grid.className = 'global-grid';
                 const filtered = players.filter(p => {
-                    const matchView = (curDevice === 'all') ? p.isGlobal === true : p.device === curDevice;
-                    return matchView && p.rank > 0 && p.name.toLowerCase().includes(search);
-                }).sort((a,b) => a.rank - b.rank);
+                    const matchView = (curDevice === 'all') ? p.isGlobal : p.device === curDevice;
+                    const rankToUse = (curDevice === 'all') ? p.rankGlob : p.rankDev;
+                    return matchView && rankToUse > 0 && p.name.toLowerCase().includes(search);
+                }).sort((a,b) => (curDevice === 'all' ? a.rankGlob - b.rankGlob : a.rankDev - b.rankDev));
 
                 filtered.forEach(p => {
-                    grid.innerHTML += `<div class="player-card" onclick="openBio('${p.name}')"><div class="rank-num">#${p.rank}</div><div class="skin-box"><img src="https://minotar.net/helm/${p.name}/60.png"></div><div><b>${p.name}</b><br><small>${p.server.toUpperCase()} | ${p.tier} | ${p.device.toUpperCase()}</small></div></div>`;
+                    const r = (curDevice === 'all') ? p.rankGlob : p.rankDev;
+                    grid.innerHTML += `<div class="player-card" onclick="openBio('${p.name}')"><div class="rank-num">#${r}</div><div class="skin-box"><img src="https://minotar.net/helm/${p.name}/60.png"></div><div><b>${p.name}</b><br><small>${p.server.toUpperCase()} | ${p.tier} | ${p.device.toUpperCase()}</small></div></div>`;
                 });
                 area.appendChild(grid);
             } else {
                 const activeTiers = (curMode === 'tiers') ? swordTiers : bowTiers;
                 activeTiers.forEach(t => {
                     const filtered = players.filter(p => {
-                        const matchView = (curDevice === 'all') ? p.isGlobal === true : p.device === curDevice;
+                        const matchView = (curDevice === 'all') ? p.isGlobal : p.device === curDevice;
                         const matchType = (curMode === 'bows' ? p.type === 'bow' : p.type === 'sword');
                         const matchServer = (curMode === 'bows' || p.server === curServer);
                         return matchView && p.tier === t && matchType && matchServer && p.name.toLowerCase().includes(search);
@@ -251,35 +245,29 @@
         }
 
         function saveData() {
-            const n = document.getElementById('adm-name').value.trim();
-            const t = document.getElementById('adm-tier').value.trim().toUpperCase();
-            const r = parseInt(document.getElementById('adm-rank').value) || 0;
-            const d = document.getElementById('adm-dev').value;
-            const ty = document.getElementById('adm-type').value;
-            const s = document.getElementById('adm-srv').value;
-            const g = document.getElementById('adm-global').checked;
-            if(n && t) {
-                db.ref('players/' + n).set({ name: n, tier: t, rank: r, device: d, type: ty, server: s, isGlobal: g, bio: "" })
-                .then(() => alert("Успешно сохранено!"));
-            }
+            const n = document.getElementById('adm-name').value.trim(), t = document.getElementById('adm-tier').value.trim().toUpperCase(),
+                  rd = parseInt(document.getElementById('adm-rank-dev').value) || 0, rg = parseInt(document.getElementById('adm-rank-glob').value) || 0,
+                  d = document.getElementById('adm-dev').value, ty = document.getElementById('adm-type').value, s = document.getElementById('adm-srv').value,
+                  g = document.getElementById('adm-global').checked, bio = document.getElementById('adm-bio').value;
+            if(n && t) db.ref('players/' + n).set({ name: n, tier: t, rankDev: rd, rankGlob: rg, device: d, type: ty, server: s, isGlobal: g, bio: bio }).then(() => alert("Saved!"));
         }
 
         function deleteData() {
             const n = document.getElementById('adm-name').value;
-            if(n && confirm("Удалить игрока " + n + "?")) db.ref('players/' + n).remove();
+            if(n && confirm("Удалить?")) db.ref('players/' + n).remove();
         }
 
         function openBio(n) {
-            const p = players.find(x => x.name === n);
+            const p = players.find(x => x.name === n); if(!p) return;
             document.getElementById('b-name').innerText = p.name;
             document.getElementById('b-img').src = `https://minotar.net/helm/${p.name}/100.png`;
-            document.getElementById('b-info').innerHTML = `Device: ${p.device.toUpperCase()}<br>Tier: ${p.tier}<br>Server: ${p.server.toUpperCase()}<br>Global: ${p.isGlobal ? 'Yes' : 'No'}`;
+            document.getElementById('b-stats').innerHTML = `УСТРОЙСТВО: ${p.device.toUpperCase()}<br>ТИР: ${p.tier}<br>СЕРВЕР: ${p.server.toUpperCase()}<br>РАНГ В ТОПЕ: #${p.rankDev} (Global: #${p.rankGlob})`;
+            document.getElementById('b-bio-text').innerText = p.bio || "Биография пока не заполнена.";
             toggleModal('bio-modal');
         }
 
         function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
         function auth() { if(btoa(prompt("Пароль:")) === SECRET) document.getElementById('admin-panel').classList.remove('hidden'); }
-
         init();
     </script>
 </body>

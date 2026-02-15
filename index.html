@@ -25,7 +25,6 @@
             user-select: none;
         }
 
-        /* Анимация клика */
         .click-particle {
             position: fixed; pointer-events: none; width: 4px; height: 4px; 
             background: var(--accent); border-radius: 50%; z-index: 10000;
@@ -48,7 +47,7 @@
         .logo span { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
 
         .suggest-btn { background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 800; font-size: 10px; cursor: pointer; text-transform: uppercase; text-decoration: none; transition: 0.2s; }
-        .suggest-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,0,0,0.3); }
+        .suggest-btn:active { transform: scale(0.95); }
 
         .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; padding-bottom: 150px; }
         .section-title { text-align: center; margin: 25px 0 10px; font-size: 9px; letter-spacing: 3px; color: var(--text-dim); text-transform: uppercase; font-weight: 800; }
@@ -57,7 +56,6 @@
         .nav-btn { background: var(--glass); border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 800; color: var(--text-dim); text-transform: uppercase; transition: 0.2s; font-size: 10px; outline: none; }
         .nav-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 20px rgba(255,0,0,0.2); }
 
-        /* Цвета Тиров */
         .tier-row { background: var(--glass); backdrop-filter: blur(var(--blur)); border-radius: 18px; margin-bottom: 10px; border: 1px solid var(--glass-border); display: flex; overflow: hidden; }
         .tier-label { width: 75px; display: flex; align-items: center; justify-content: center; font-weight: 900; background: rgba(0,0,0,0.3); font-size: 16px; flex-shrink: 0; }
         
@@ -68,9 +66,7 @@
 
         .players-wrap { padding: 12px; display: flex; flex-wrap: wrap; gap: 8px; flex-grow: 1; }
         .p-tag { background: rgba(255,255,255,0.04); padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; font-weight: 600; }
-        .p-tag:hover { background: rgba(255,255,255,0.08); }
-
-        /* Индивидуальные теги */
+        .p-tag:hover { background: rgba(255,255,255,0.1); }
         .tag-gold { border-color: #FFD700; color: #FFD700; }
         .tag-silver { border-color: #E0E0E0; color: #E0E0E0; }
         .tag-bronze { border-color: #CD7F32; color: #CD7F32; }
@@ -88,8 +84,8 @@
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #0a0a0a; border: 1px solid var(--glass-border); width: 90%; max-width: 400px; border-radius: 20px; padding: 25px; }
 
-        .admin-panel { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 1200px; background: #0a0a0c; border: 2px solid var(--accent); padding: 12px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; z-index: 999; border-radius: 15px; }
-        .admin-input { background: #000; border: 1px solid #333; color: white; padding: 7px; border-radius: 6px; font-size: 11px; outline: none; }
+        .admin-panel { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 1200px; background: #0a0a0c; border: 2px solid var(--accent); padding: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; z-index: 999; border-radius: 15px; }
+        .admin-input { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 6px; font-size: 11px; outline: none; }
         .admin-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 11px; }
 
         .hidden { display: none !important; }
@@ -101,7 +97,7 @@
     <header class="header">
         <div class="logo">FISH<span>TIERS</span></div>
         <div class="header-tools">
-            <a href="https://vk.com/fishtiers" target="_blank" class="suggest-btn">Предложить игрока</a>
+            <a href="https://vk.com/fishtiers" target="_blank" class="suggest-btn">Предложить</a>
             <input type="text" class="admin-input" id="search" placeholder="Поиск..." oninput="renderAll()" style="width: 110px;">
             <button class="nav-btn" style="border-radius:50%; width:38px; height:38px; padding:0; display:flex; align-items:center; justify-content:center;" onclick="toggleModal('user-modal')">🎨</button>
         </div>
@@ -110,14 +106,14 @@
     <div class="container">
         <div class="section-title">Категория</div>
         <div class="sub-nav" id="main-modes">
-            <button class="nav-btn active" onclick="setMainMode('global', this)">🏆 Глобальный</button>
+            <button class="nav-btn active" onclick="setMainMode('global', this)">🏆 Топ</button>
             <button class="nav-btn" onclick="setMainMode('tiers', this)">⚔️ Мечи</button>
             <button class="nav-btn" onclick="setMainMode('bows', this)">🏹 Луки</button>
         </div>
 
         <div class="section-title">Устройство</div>
         <div class="sub-nav" id="device-modes">
-            <button class="nav-btn active" onclick="setDevice('all', this)">🌍 TOP ALL</button>
+            <button class="nav-btn active" onclick="setDevice('all', this)">🌍 ВСЕ</button>
             <button class="nav-btn" onclick="setDevice('pc', this)">💻 PC</button>
             <button class="nav-btn" onclick="setDevice('gp', this)">🎮 GP</button>
             <button class="nav-btn" onclick="setDevice('pe', this)">📱 PE</button>
@@ -152,6 +148,177 @@
             <input type="color" id="u-color" onchange="updateUI()" style="width:100%; height:40px; margin-bottom: 15px;">
             <input type="range" id="u-blur" min="0" max="100" oninput="updateUI()" style="width:100%;">
             <button class="admin-btn" style="width:100%; margin-top:20px;" onclick="toggleModal('user-modal')">ГОТОВО</button>
+        </div>
+    </div>
+
+    <div id="admin-panel" class="admin-panel hidden">
+        <input type="text" id="adm-name" class="admin-input" placeholder="Ник" style="width:100px">
+        <input type="text" id="adm-tier" class="admin-input" style="width:50px" placeholder="HT1">
+        <input type="number" id="adm-rank-dev" class="admin-input" style="width:50px" placeholder="Место">
+        <input type="number" id="adm-rank-glob" class="admin-input" style="width:50px" placeholder="Топ">
+        <select id="adm-dev" class="admin-input"><option value="pc">PC</option><option value="gp">GP</option><option value="pe">PE</option></select>
+        <select id="adm-type" class="admin-input"><option value="sword">Меч</option><option value="bow">Лук</option></select>
+        <select id="adm-srv" class="admin-input"><option value="ugame">UGAME</option><option value="breadix">BREADIX</option><option value="minenex">MINENEX</option></select>
+        <input type="text" id="adm-bio" class="admin-input" placeholder="Био" style="width:100px">
+        <label style="font-size: 9px; color:white; display:flex; align-items:center; gap:3px;"><input type="checkbox" id="adm-global"> GLOB</label>
+        <button class="admin-btn" onclick="saveData()">СОХРАНИТЬ</button>
+        <button class="admin-btn" style="background:#333" onclick="deleteData()">УДАЛИТЬ</button>
+    </div>
+    <div style="position:fixed; bottom:5px; right:10px; font-size:8px; opacity:0.1; cursor:pointer;" onclick="auth()">ADMIN</div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCwcHXslvUZoFJ6qOd-7TGZXo2dQrWx6Kg",
+            authDomain: "fishtiers-b8b0f.firebaseapp.com",
+            databaseURL: "https://fishtiers-b8b0f-default-rtdb.firebaseio.com",
+            projectId: "fishtiers-b8b0f",
+            storageBucket: "fishtiers-b8b0f.firebasestorage.app",
+            messagingSenderId: "887698034750",
+            appId: "1:887698034750:web:953f8fb88f215c7104816f"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let players = [];
+        let curMode = 'global', curDevice = 'all', curServer = 'all';
+        let audioCtx;
+
+        function playSound() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                o.type='sine'; o.frequency.setValueAtTime(600, audioCtx.currentTime);
+                o.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+                g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.1);
+            } catch(e) {}
+        }
+
+        window.addEventListener('click', (e) => {
+            if(e.target.tagName==='INPUT' || e.target.tagName==='SELECT' || e.target.tagName==='TEXTAREA') return;
+            playSound();
+            for(let i=0; i<6; i++) {
+                const p = document.createElement('div'); p.className = 'click-particle';
+                p.style.left = e.clientX+'px'; p.style.top = e.clientY+'px';
+                p.style.setProperty('--tx', (Math.random()-0.5)*100+'px');
+                p.style.setProperty('--ty', (Math.random()-0.5)*100+'px');
+                document.body.appendChild(p); setTimeout(()=>p.remove(), 600);
+            }
+        });
+
+        function getTierStyle(t) {
+            if(t === "HT1") return "gold";
+            if(t === "HT2") return "silver";
+            if(t === "HT3") return "bronze";
+            return "normal";
+        }
+
+        db.ref('players').on('value', snap => {
+            players = snap.val() ? Object.values(snap.val()) : [];
+            renderAll();
+        });
+
+        function renderAll() {
+            const area = document.getElementById('display-area');
+            const search = document.getElementById('search').value.toLowerCase().trim();
+            area.innerHTML = '';
+
+            const filtered = players.filter(p => {
+                const mSearch = search === '' || p.name.toLowerCase().includes(search);
+                const mDevice = (curDevice === 'all' || p.device === curDevice);
+                const mServer = (curServer === 'all' || p.server === curServer);
+                const mType = (curMode === 'global') ? true : (curMode === 'bows' ? p.type === 'bow' : p.type === 'sword');
+                const mGlobal = (curMode === 'global') ? p.isGlobal : true;
+                return mSearch && mDevice && mServer && mType && mGlobal;
+            });
+
+            if (curMode === 'global') {
+                const grid = document.createElement('div'); grid.className = 'global-grid';
+                filtered.sort((a,b) => (curDevice === 'all' ? a.rankGlob - b.rankGlob : a.rankDev - b.rankDev));
+                
+                filtered.forEach(p => {
+                    const r = (curDevice === 'all' ? p.rankGlob : p.rankDev);
+                    const rankStr = (r >= 999) ? "-" : `#${r}`;
+                    const style = getTierStyle(p.tier);
+                    grid.innerHTML += `<div class="player-card card-${style}" onclick="openBio('${p.name}')"><div class="rank-num">${rankStr}</div><div class="skin-box"><img src="https://minotar.net/helm/${p.name}/60.png"></div><div><b>${p.name}</b><br><small>${p.server.toUpperCase()} | ${p.tier}</small></div></div>`;
+                });
+                area.appendChild(grid);
+            } else {
+                const tiers = curMode === 'tiers' ? ["HT1", "HT2", "HT3", "MT1", "MT2", "LT1", "LT2", "LT3"] : ["HT1", "HT2", "HT3", "HT4", "HT5", "MT1", "MT2", "MT3", "MT4", "MT5", "LT1", "LT2", "LT3", "LT4", "LT5"];
+                
+                tiers.forEach(t => {
+                    const tierPlayers = filtered.filter(p => p.tier === t).sort((a,b) => a.rankDev - b.rankDev);
+                    if(tierPlayers.length > 0) {
+                        const style = getTierStyle(t);
+                        area.innerHTML += `<div class="tier-row"><div class="tier-label t-${style}">${t}</div><div class="players-wrap">${tierPlayers.map(p => `<div class="p-tag tag-${style}" onclick="openBio('${p.name}')">${p.name}</div>`).join('')}</div></div>`;
+                    }
+                });
+            }
+        }
+
+        function init() {
+            const s = JSON.parse(localStorage.getItem('fCfg')) || { color: '#FF0000', blur: 100 };
+            document.getElementById('u-color').value = s.color;
+            document.getElementById('u-blur').value = s.blur;
+            updateUI(false);
+        }
+
+        function updateUI(save = true) {
+            const c = document.getElementById('u-color').value, b = document.getElementById('u-blur').value;
+            document.documentElement.style.setProperty('--accent', c);
+            document.documentElement.style.setProperty('--blur', b + 'px');
+            document.getElementById('glow').style.background = `radial-gradient(circle at 20% 20%, ${c} 0%, transparent 40%), radial-gradient(circle at 80% 80%, ${c} 0%, transparent 40%)`;
+            if(save) localStorage.setItem('fCfg', JSON.stringify({ color: c, blur: b }));
+        }
+
+        function setMainMode(m, el) { curMode = m; updateActive(el, '#main-modes'); renderAll(); }
+        function setDevice(d, el) { curDevice = d; updateActive(el, '#device-modes'); renderAll(); }
+        function setServer(s, el) { curServer = s; updateActive(el, '#srv-select'); renderAll(); }
+        function updateActive(el, parentId) { document.querySelectorAll(parentId + ' .nav-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+
+        function openBio(n) {
+            const p = players.find(x => x.name === n); if(!p) return;
+            document.getElementById('b-name').innerText = p.name;
+            document.getElementById('b-img').src = `https://minotar.net/helm/${p.name}/100.png`;
+            document.getElementById('b-stats').innerHTML = `DEVICE: ${p.device.toUpperCase()} | SERVER: ${p.server.toUpperCase()}<br>TIER: ${p.tier} | RANK: ${p.rankDev>=999?'-':'#'+p.rankDev} (ALL: ${p.rankGlob>=999?'-':'#'+p.rankGlob})`;
+            document.getElementById('b-bio-text').innerText = p.bio || "Биография игрока отсутствует.";
+            toggleModal('bio-modal');
+        }
+
+        function saveData() {
+            const n = document.getElementById('adm-name').value.trim();
+            if(!n) return alert("Введите ник!");
+            
+            db.ref('players/' + n).set({
+                name: n, 
+                tier: document.getElementById('adm-tier').value.toUpperCase(),
+                rankDev: parseInt(document.getElementById('adm-rank-dev').value) || 999,
+                rankGlob: parseInt(document.getElementById('adm-rank-glob').value) || 999,
+                device: document.getElementById('adm-dev').value,
+                type: document.getElementById('adm-type').value,
+                server: document.getElementById('adm-srv').value,
+                isGlobal: document.getElementById('adm-global').checked,
+                bio: document.getElementById('adm-bio').value
+            }).then(() => {
+                alert("Игрок добавлен/обновлен!");
+                document.getElementById('adm-name').value = '';
+            });
+        }
+        
+        function deleteData() { 
+            const n = document.getElementById('adm-name').value.trim(); 
+            if(n && confirm("Точно удалить " + n + "?")) {
+                db.ref('players/' + n).remove().then(() => {
+                    alert("Удалено!");
+                    document.getElementById('adm-name').value = '';
+                });
+            }
+        }
+        
+        function auth() { if(btoa(prompt("Пароль:")) === "ZG9pcnN5MTIz" style="width:100%; margin-top:20px;" onclick="toggleModal('user-modal')">ГОТОВО</button>
         </div>
     </div>
 

@@ -177,7 +177,6 @@
         let players = [];
         let curMode = 'global', curDevice = 'all', curServer = 'all';
 
-        // --- ЭФФЕКТЫ ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playClickSound() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -200,7 +199,6 @@
             }
         });
 
-        // --- ЛОГИКА ---
         function init() {
             const s = JSON.parse(localStorage.getItem('fCfg')) || { color: '#FF0000', blur: 100 };
             document.getElementById('u-color').value = s.color;
@@ -242,7 +240,6 @@
 
             if (curMode === 'global') {
                 const grid = document.createElement('div'); grid.className = 'global-grid';
-                // Сортировка по возрастанию: 1 выше чем 2
                 filtered.sort((a,b) => (curDevice === 'all' ? a.rankGlob - b.rankGlob : a.rankDev - b.rankDev));
 
                 filtered.forEach(p => {
@@ -272,21 +269,38 @@
         function setServer(s, el) { curServer = s; updateActive(el, '#srv-modes'); renderAll(); }
         function updateActive(el, id) { document.querySelectorAll(id + ' .nav-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
 
-        function saveData() {
+        async function saveData() {
             const n = document.getElementById('adm-name').value.trim();
+            const rg = parseInt(document.getElementById('adm-rank-glob').value) || 0;
+            const isGlob = document.getElementById('adm-global').checked;
             if(!n) return;
+
+            if (isGlob && rg > 0) {
+                const updates = {};
+                players.forEach(p => {
+                    if (p.isGlobal && p.rankGlob >= rg && p.name !== n) {
+                        updates[`players/${p.name}/rankGlob`] = p.rankGlob + 1;
+                    }
+                });
+                if (Object.keys(updates).length > 0) {
+                    await db.ref().update(updates);
+                }
+            }
+
             db.ref('players/' + n).set({
                 name: n, tier: document.getElementById('adm-tier').value.toUpperCase(),
                 rankDev: parseInt(document.getElementById('adm-rank-dev').value) || 0,
-                rankGlob: parseInt(document.getElementById('adm-rank-glob').value) || 0,
+                rankGlob: rg,
                 device: document.getElementById('adm-dev').value,
                 type: document.getElementById('adm-type').value,
                 server: document.getElementById('adm-srv').value,
-                isGlobal: document.getElementById('adm-global').checked,
+                isGlobal: isGlob,
                 bio: document.getElementById('adm-bio').value
             }).then(() => alert("Saved!"));
         }
+
         function deleteData() { const n = document.getElementById('adm-name').value; if(n && confirm("Del?")) db.ref('players/'+n).remove(); }
+        
         function openBio(n) {
             const p = players.find(x => x.name === n); if(!p) return;
             document.getElementById('b-name').innerText = p.name;
@@ -295,6 +309,7 @@
             document.getElementById('b-bio-text').innerText = p.bio || "Биография отсутствует.";
             toggleModal('bio-modal');
         }
+        
         function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
         function auth() { if(btoa(prompt("Pass:")) === "ZG9pcnN5MTIz") document.getElementById('admin-panel').classList.remove('hidden'); }
         init();

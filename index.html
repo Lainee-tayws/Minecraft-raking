@@ -3,155 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FishTiers | Pro Edition</title>
+    <title>FishTiers | Stable</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&display=swap');
         
         :root {
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
             --accent: #FF0000;
-            --text: #ffffff;
-            --text-dim: #888;
-            --blur: 100px;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         body {
-            font-family: 'Montserrat', sans-serif; background: #050505;
-            color: var(--text); margin: 0; min-height: 100vh; overflow-x: hidden;
-            user-select: none;
+            font-family: 'Montserrat', sans-serif; background: #000;
+            color: #fff; margin: 0; padding-bottom: 100px;
         }
 
-        .click-particle {
-            position: fixed; pointer-events: none; width: 4px; height: 4px; 
-            background: var(--accent); border-radius: 50%; z-index: 10000;
-            animation: particle-fly 0.6s ease-out forwards;
-        }
-        @keyframes particle-fly {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; }
-        }
+        .header { padding: 15px; background: #0a0a0a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .logo { font-weight: 900; font-size: 20px; }
+        .logo span { color: var(--accent); }
 
-        .bg-glow {
-            position: fixed; width: 100vw; height: 100vh; z-index: -1;
-            background: radial-gradient(circle at 20% 20%, var(--accent) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 80%, var(--accent) 0%, transparent 40%);
-            opacity: 0.15; filter: blur(50px);
-        }
+        .container { max-width: 1000px; margin: auto; padding: 20px; }
+        .section-title { font-size: 10px; color: #666; text-transform: uppercase; margin: 20px 0 10px; text-align: center; letter-spacing: 2px; }
 
-        .header { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100; }
-        .logo { font-weight: 900; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
-        .logo span { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
+        .sub-nav { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+        .nav-btn { background: var(--glass); border: 1px solid var(--border); color: #fff; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .nav-btn.active { background: var(--accent); border-color: var(--accent); }
 
-        .suggest-btn { background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 800; font-size: 10px; cursor: pointer; text-transform: uppercase; text-decoration: none; transition: 0.2s; }
-        .suggest-btn:active { transform: scale(0.95); }
+        .tier-row { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; display: flex; overflow: hidden; }
+        .tier-label { width: 60px; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--accent); }
+        .players-wrap { padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+        .p-tag { background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid var(--border); }
 
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; padding-bottom: 150px; }
-        .section-title { text-align: center; margin: 25px 0 10px; font-size: 9px; letter-spacing: 3px; color: var(--text-dim); text-transform: uppercase; font-weight: 800; }
+        .player-card { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .rank-num { font-size: 20px; font-weight: 900; opacity: 0.3; width: 40px; }
+        .skin { width: 45px; height: 45px; border-radius: 8px; }
 
-        .sub-nav { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .nav-btn { background: var(--glass); border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 800; color: var(--text-dim); text-transform: uppercase; transition: 0.2s; font-size: 10px; outline: none; }
-        .nav-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 20px rgba(255,0,0,0.2); }
-
-        .tier-row { background: var(--glass); backdrop-filter: blur(var(--blur)); border-radius: 18px; margin-bottom: 10px; border: 1px solid var(--glass-border); display: flex; overflow: hidden; }
-        .tier-label { width: 75px; display: flex; align-items: center; justify-content: center; font-weight: 900; background: rgba(0,0,0,0.3); font-size: 16px; flex-shrink: 0; }
-        
-        .t-gold { color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.4); }
-        .t-silver { color: #E0E0E0; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
-        .t-bronze { color: #CD7F32; text-shadow: 0 0 10px rgba(205,127,50,0.3); }
-        .t-normal { color: var(--accent); }
-
-        .players-wrap { padding: 12px; display: flex; flex-wrap: wrap; gap: 8px; flex-grow: 1; }
-        .p-tag { background: rgba(255,255,255,0.04); padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; font-weight: 600; }
-        .p-tag:hover { background: rgba(255,255,255,0.1); }
-        .tag-gold { border-color: #FFD700; color: #FFD700; }
-        .tag-silver { border-color: #E0E0E0; color: #E0E0E0; }
-        .tag-bronze { border-color: #CD7F32; color: #CD7F32; }
-
-        .global-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
-        .player-card { background: var(--glass); backdrop-filter: blur(var(--blur)); border-radius: 20px; padding: 15px; display: flex; align-items: center; border: 1px solid var(--glass-border); transition: 0.2s; cursor: pointer; }
-        .card-gold { border-color: #FFD700 !important; }
-        .card-silver { border-color: #E0E0E0 !important; }
-        .card-bronze { border-color: #CD7F32 !important; }
-
-        .rank-num { font-weight: 900; font-size: 22px; width: 45px; opacity: 0.3; }
-        .skin-box { width: 50px; height: 50px; background: #000; border-radius: 10px; margin-right: 15px; overflow: hidden; border: 1px solid var(--glass-border); }
-        .skin-box img { width: 100%; image-rendering: pixelated; }
-
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #0a0a0a; border: 1px solid var(--glass-border); width: 90%; max-width: 400px; border-radius: 20px; padding: 25px; }
-
-        .admin-panel { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 1200px; background: #0a0a0c; border: 2px solid var(--accent); padding: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; z-index: 999; border-radius: 15px; }
-        .admin-input { background: #000; border: 1px solid #333; color: white; padding: 8px; border-radius: 6px; font-size: 11px; outline: none; }
-        .admin-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 11px; }
+        .admin-panel { position: fixed; bottom: 0; left: 0; width: 100%; background: #0a0a0a; padding: 15px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; border-top: 2px solid var(--accent); z-index: 999; }
+        .adm-in { background: #111; border: 1px solid #333; color: #fff; padding: 5px; font-size: 11px; border-radius: 4px; }
 
         .hidden { display: none !important; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
     </style>
 </head>
 <body>
-    <div class="bg-glow" id="glow"></div>
-    
-    <header class="header">
-        <div class="logo">FISH<span>TIERS</span></div>
-        <div class="header-tools">
-            <a href="https://vk.com/fishtiers" target="_blank" class="suggest-btn">Предложить</a>
-            <input type="text" class="admin-input" id="search" placeholder="Поиск..." oninput="renderAll()" style="width: 110px;">
-            <button class="nav-btn" style="border-radius:50%; width:38px; height:38px; padding:0; display:flex; align-items:center; justify-content:center;" onclick="toggleModal('user-modal')">🎨</button>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="section-title">Категория</div>
-        <div class="sub-nav" id="main-modes">
-            <button class="nav-btn active" onclick="setMainMode('global', this)">🏆 Топ</button>
-            <button class="nav-btn" onclick="setMainMode('tiers', this)">⚔️ Мечи</button>
-            <button class="nav-btn" onclick="setMainMode('bows', this)">🏹 Луки</button>
-        </div>
+<header class="header">
+    <div class="logo">FISH<span>TIERS</span></div>
+    <input type="text" id="search" class="adm-in" placeholder="Поиск..." oninput="render()">
+</header>
 
-        <div class="section-title">Устройство</div>
-        <div class="sub-nav" id="device-modes">
-            <button class="nav-btn active" onclick="setDevice('all', this)">🌍 ВСЕ</button>
-            <button class="nav-btn" onclick="setDevice('pc', this)">💻 PC</button>
-            <button class="nav-btn" onclick="setDevice('gp', this)">🎮 GP</button>
-            <button class="nav-btn" onclick="setDevice('pe', this)">📱 PE</button>
-        </div>
-
-        <div class="section-title">Сервер</div>
-        <div class="sub-nav" id="srv-select">
-            <button class="nav-btn active" onclick="setServer('all', this)">ВСЕ</button>
-            <button class="nav-btn" onclick="setServer('ugame', this)">UGAME</button>
-            <button class="nav-btn" onclick="setServer('breadix', this)">BREADIX</button>
-            <button class="nav-btn" onclick="setServer('minenex', this)">MINENEX</button>
-        </div>
-
-        <div id="display-area" style="margin-top: 30px;"></div>
+<div class="container">
+    <div class="section-title">Режим</div>
+    <div class="sub-nav">
+        <button class="nav-btn active" onclick="setMode('global', this)">Топ</button>
+        <button class="nav-btn" onclick="setMode('sword', this)">Мечи</button>
+        <button class="nav-btn" onclick="setMode('bow', this)">Луки</button>
     </div>
 
-    <div id="bio-modal" class="modal-overlay hidden" onclick="toggleModal('bio-modal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div style="display:flex; align-items:center; gap:15px;">
-                <img id="b-img" src="" style="width:60px; height:60px; border-radius:10px; border:2px solid var(--accent);">
-                <h2 id="b-name" style="margin:0; font-size: 20px;"></h2>
-            </div>
-            <div id="b-stats" style="color:#888; font-size:12px; margin: 15px 0; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;"></div>
-            <div id="b-bio-text" style="color:#eee; font-size:13px; line-height: 1.5; max-height: 150px; overflow-y: auto;"></div>
-            <button class="admin-btn" style="width:100%; margin-top:20px;" onclick="toggleModal('bio-modal')">ЗАКРЫТЬ</button>
-        </div>
+    <div class="section-title">Сервер</div>
+    <div class="sub-nav">
+        <button class="nav-btn active" onclick="setSrv('all', this)">Все</button>
+        <button class="nav-btn" onclick="setSrv('ugame', this)">UGAME</button>
+        <button class="nav-btn" onclick="setSrv('breadix', this)">BREADIX</button>
+        <button class="nav-btn" onclick="setSrv('minenex', this)">MINENEX</button>
     </div>
 
-    <div id="user-modal" class="modal-overlay hidden" onclick="toggleModal('user-modal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 style="margin:0 0 15px 0;">ИНТЕРФЕЙС</h3>
-            <input type="color" id="u-color" onchange="updateUI()" style="width:100%; height:40px; margin-bottom: 15px;">
-            <input type="range" id="u-blur" min="0" max="100" oninput="updateUI()" style="width:100%;">
-            <button class="admin-btn" style="width:100%; margin-top:20px;" onclick="toggleModal('user-modal')">ГОТОВО</button>
-        </div>
-    </div>
+    <div id="view" class="grid"></div>
+</div>
 
-    <div id="admin-panel" class="admin-panel hidden">
+<div id="admin" class="admin-panel hidden">
+    <input type="text" id="a-name" class="adm-in" placeholder="Ник">
+    <input type="text" id="a-tier" class="adm-in" placeholder="HT1" style="width:40px">
+    <input type="number" id="a-rank" class="adm-in" placeholder="Ранг" style="width:40px">
+    <select id="a-srv" class="adm-in">
+        <option value="ugame">UGAME</option><option value="breadix">BREADIX</option><option value="minenex">MINENEX</option>
+    </select>
+    <select id="a-type" class="adm-in">
+        <option value="sword">Меч</option><option value="bow">Лук</option>
+    </select>
+    <label style="font-size:10px"><input type="checkbox" id="a-glob"> Топ?</label>
+    <button onclick="save()" class="nav-btn" style="background:green">OK</button>
+    <button onclick="del()" class="nav-btn" style="background:maroon">DEL</button>
+</div>
+
+<div style="text-align:center; opacity:0.1; font-size:10px;" onclick="auth()">ADMIN</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCwcHXslvUZoFJ6qOd-7TGZXo2dQrWx6Kg",
+        authDomain: "fishtiers-b8b0f.firebaseapp.com",
+        databaseURL: "https://fishtiers-b8b0f-default-rtdb.firebaseio.com",
+        projectId: "fishtiers-b8b0f",
+        storageBucket: "fishtiers-b8b0f.firebasestorage.app",
+        messagingSenderId: "887698034750",
+        appId: "1:887698034750:web:953f8fb88f215c7104816f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let players = [];
+    let mode = 'global', srv = 'all';
+
+    db.ref('players').on('value', s => {
+        players = s.val() ? Object.values(s.val()) : [];
+        render();
+    });
+
+    function render() {
+        const out = document.getElementById('view');
+        const q = document.getElementById('search').value.toLowerCase();
+        out.innerHTML = '';
+
+        let filtered = players.filter(p => {
+            const mSrv = srv === 'all' || p.srv === srv;
+            const mName = p.name.toLowerCase().includes(q);
+            const mType = mode === 'global' ? p.isGlob : p.type === mode;
+            return mSrv && mName && mType;
+        });
+
+        // Сортировка по рангу (1 выше 2)
+        filtered.sort((a,b) => a.rank - b.rank);
+
+        if(mode === 'global') {
+            out.className = 'grid';
+            filtered.forEach(p => {
+                out.innerHTML += `<div class="player-card">
+                    <div class="rank-num">#${p.rank}</div>
+                    <img src="https://minotar.net/helm/${p.name}/45.png" class="skin">
+                    <div><b>${p.name}</b><br><small>${p.srv.toUpperCase()} | ${p.tier}</small></div>
+                </div>`;
+            });
+        } else {
+            out.className = '';
+            const tiers = ["HT1","HT2","HT3","MT1","MT2","LT1","LT2","LT3"];
+            tiers.forEach(t => {
+                const ps = filtered.filter(p => p.tier === t);
+                if(ps.length) {
+                    out.innerHTML += `<div class="tier-row">
+                        <div class="tier-label">${t}</div>
+                        <div class="players-wrap">
+                            ${ps.map(p => `<div class="p-tag">${p.name}</div>`).join('')}
+                        </div>
+                    </div>`;
+                }
+            });
+        }
+    }
+
+    function setMode(m, e) {
+        mode = m;
+        document.querySelectorAll('.sub-nav:nth-of-type(1) .nav-btn').forEach(b => b.classList.remove('active'));
+        e.classList.add('active');
+        render();
+    }
+
+    function setSrv(s, e) {
+        srv = s;
+        document.querySelectorAll('.sub-nav:nth-of-type(2) .nav-btn').forEach(b => b.classList.remove('active'));
+        e.classList.add('active');
+        render();
+    }
+
+    function save() {
+        const n = document.getElementById('a-name').value;
+        if(!n) return;
+        db.ref('players/'+n).set({
+            name: n,
+            tier: document.getElementById('a-tier').value.toUpperCase(),
+            rank: parseInt(document.getElementById('a-rank').value) || 99,
+            srv: document.getElementById('a-srv').value,
+            type: document.getElementById('a-type').value,
+            isGlob: document.getElementById('a-glob').checked
+        });
+    }
+
+    function del() {
+        const n = document.getElementById('a-name').value;
+        if(n) db.ref('players/'+n).remove();
+    }
+
+    function auth() { if(prompt("Pass") === "123") document.getElementById('admin').classList.remove('hidden'); }
+</script>
+
+</body>
+</html>
+-panel hidden">
         <input type="text" id="adm-name" class="admin-input" placeholder="Ник" style="width:100px">
         <input type="text" id="adm-tier" class="admin-input" style="width:50px" placeholder="HT1">
         <input type="number" id="adm-rank-dev" class="admin-input" style="width:50px" placeholder="Место">

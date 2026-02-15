@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FishTiers | Pro Edition Fixed</title>
+    <title>FishTiers | Global ALL Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
@@ -37,17 +37,15 @@
 
         .header-tools { display: flex; align-items: center; gap: 15px; }
         .search-box { background: var(--glass); border: 1px solid var(--glass-border); padding: 10px 20px; border-radius: 30px; color: white; outline: none; width: 150px; transition: 0.3s; }
-        .search-box:focus { width: 250px; border-color: var(--accent); }
+        .search-box:focus { width: 220px; border-color: var(--accent); }
 
         .container { max-width: 1300px; margin: 20px auto; padding: 0 20px; padding-bottom: 150px; }
-
         .section-title { text-align: center; margin: 30px 0 15px; font-size: 10px; letter-spacing: 4px; color: var(--text-dim); text-transform: uppercase; font-weight: 800; }
 
         .sub-nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .nav-btn { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 800; color: var(--text-dim); text-transform: uppercase; transition: 0.3s; font-size: 11px; }
         .nav-btn.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 25px rgba(255,0,0,0.3); }
 
-        /* Игровые карточки */
         .tier-row { background: var(--glass); backdrop-filter: blur(var(--blur)); border-radius: 20px; margin-bottom: 12px; border: 1px solid var(--glass-border); display: flex; }
         .tier-label { width: 70px; display: flex; align-items: center; justify-content: center; font-weight: 900; background: rgba(0,0,0,0.3); color: var(--accent); font-size: 20px; }
         .players-wrap { padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; }
@@ -65,8 +63,8 @@
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #0a0a0a; border: 1px solid var(--glass-border); width: 90%; max-width: 450px; border-radius: 25px; padding: 30px; }
 
-        .admin-panel { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 1000px; background: #0a0a0c; border: 2px solid var(--accent); padding: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; z-index: 999; border-radius: 20px; }
-        .admin-input { background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 8px; font-size: 13px; }
+        .admin-panel { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 1100px; background: #0a0a0c; border: 2px solid var(--accent); padding: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; z-index: 999; border-radius: 20px; }
+        .admin-input { background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 8px; font-size: 12px; }
         .admin-btn { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 900; }
 
         .hidden { display: none !important; }
@@ -94,7 +92,8 @@
 
         <div class="section-title">Устройство</div>
         <div class="sub-nav" id="device-modes">
-            <button class="nav-btn active" onclick="setDevice('pc', this)">💻 PC</button>
+            <button class="nav-btn active" onclick="setDevice('all', this)">🌍 ALL</button>
+            <button class="nav-btn" onclick="setDevice('pc', this)">💻 PC</button>
             <button class="nav-btn" onclick="setDevice('gp', this)">🎮 GP</button>
             <button class="nav-btn" onclick="setDevice('pe', this)">📱 PE</button>
         </div>
@@ -142,7 +141,9 @@
         <input type="text" id="adm-name" class="admin-input" placeholder="Ник">
         <input type="text" id="adm-tier" class="admin-input" style="width:70px" placeholder="HT1/BT1">
         <input type="number" id="adm-rank" class="admin-input" style="width:60px" placeholder="Ранг#">
-        <select id="adm-dev" class="admin-input"><option value="pc">PC</option><option value="gp">GP</option><option value="pe">PE</option></select>
+        <select id="adm-dev" class="admin-input">
+            <option value="pc">PC</option><option value="gp">GP</option><option value="pe">PE</option><option value="all">GLOBAL ALL</option>
+        </select>
         <select id="adm-type" class="admin-input"><option value="sword">Меч</option><option value="bow">Лук</option></select>
         <select id="adm-srv" class="admin-input"><option value="ugame">UGAME</option><option value="breadix">BREADIX</option><option value="minenex">MINENEX</option></select>
         <button class="admin-btn" onclick="saveData()">SAVE</button>
@@ -165,7 +166,7 @@
 
         let players = [];
         let curMode = 'global'; 
-        let curDevice = 'pc'; 
+        let curDevice = 'all'; 
         let curServer = 'ugame';
         const SECRET = "ZG9pcnN5MTIz"; 
 
@@ -221,15 +222,29 @@
 
             if (curMode === 'global') {
                 const grid = document.createElement('div'); grid.className = 'global-grid';
-                const filtered = players.filter(p => p.device === curDevice && p.rank > 0 && p.name.toLowerCase().includes(search)).sort((a,b) => a.rank - b.rank);
+                // Фильтрация: если ALL - берем всех с рангом, иначе фильтруем по девайсу
+                const filtered = players.filter(p => {
+                    const matchDevice = (curDevice === 'all' || p.device === curDevice);
+                    const hasRank = p.rank > 0;
+                    const matchSearch = p.name.toLowerCase().includes(search);
+                    return matchDevice && hasRank && matchSearch;
+                }).sort((a,b) => a.rank - b.rank);
+
                 filtered.forEach(p => {
-                    grid.innerHTML += `<div class="player-card" onclick="openBio('${p.name}')"><div class="rank-num">#${p.rank}</div><div class="skin-box"><img src="https://minotar.net/helm/${p.name}/60.png"></div><div><b>${p.name}</b><br><small>${p.server.toUpperCase()} | ${p.tier}</small></div></div>`;
+                    grid.innerHTML += `<div class="player-card" onclick="openBio('${p.name}')"><div class="rank-num">#${p.rank}</div><div class="skin-box"><img src="https://minotar.net/helm/${p.name}/60.png"></div><div><b>${p.name}</b><br><small>${p.server.toUpperCase()} | ${p.tier} | ${p.device.toUpperCase()}</small></div></div>`;
                 });
                 area.appendChild(grid);
             } else {
                 const tiers = (curMode === 'tiers') ? ["HT1", "HT2", "HT3", "MT1", "MT2", "LT1", "LT2", "LT3"] : ["BT1", "BT2", "BT3", "BT4", "BT5"];
                 tiers.forEach(t => {
-                    const filtered = players.filter(p => p.device === curDevice && p.tier === t && (curMode === 'bows' ? p.type === 'bow' : p.type === 'sword') && p.name.toLowerCase().includes(search) && (curMode === 'bows' || p.server === curServer));
+                    const filtered = players.filter(p => {
+                        const matchDevice = (curDevice === 'all' || p.device === curDevice);
+                        const matchTier = p.tier === t;
+                        const matchType = (curMode === 'bows' ? p.type === 'bow' : p.type === 'sword');
+                        const matchSearch = p.name.toLowerCase().includes(search);
+                        const matchServer = (curMode === 'bows' || p.server === curServer);
+                        return matchDevice && matchTier && matchType && matchSearch && matchServer;
+                    });
                     if(filtered.length > 0) {
                         area.innerHTML += `<div class="tier-row"><div class="tier-label">${t}</div><div class="players-wrap">${filtered.map(p => `<div class="p-tag" onclick="openBio('${p.name}')">${p.name}</div>`).join('')}</div></div>`;
                     }
